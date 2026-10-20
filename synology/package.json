@@ -1,0 +1,22 @@
+{
+  "name": "syno-pkg-land-jellyfin",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "render": "python3 scripts/render.py",
+    "test": "python3 tests/runtime_test.py && node --test tests/version.test.mjs",
+    "check": "synopkgland check --json",
+    "build": "synopkgland build --arch x86_64 --json",
+    "e2e": "e2e run --config e2e.config.ts"
+  },
+  "devDependencies": {
+    "@ai-sdk/openai": "4.0.91",
+    "@e2e-dev/web": "0.14.0",
+    "@synopackageland/cli": "0.19.0",
+    "@synopackageland/templates": "0.19.0",
+    "ai": "7.0.137",
+    "e2e": "0.19.0",
+    "playwright": "1.63.0"
+  }
+}
