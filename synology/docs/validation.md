@@ -1,9 +1,9 @@
 # Development acceptance
 
 This is a development integration, not a publishable SPK. Dependencies remain
-pinned to released 0.19.0. Shared-folder acceptance uses SDK commit
-`6f58211ce8cd0f6a7bbb41ed4dac883fca036e5c` and CLI commit
-`86631612d385e58cb8745ba1431eb5ca4b087cb5` through a temporary source build.
+pinned to released 0.19.0. Current development acceptance uses SDK commit
+`54c88fcddc0abcd3831ce0172329cb251b491f16` and CLI commit
+`5eee189e5291e501aacb7eb688dc9cbef464048e` through a temporary source build.
 No release, registry or catalog entry is part of this change.
 
 ## Verified boundaries
@@ -28,22 +28,29 @@ closed the App, reopened it from the DSM main menu, and signed in again with DSM
 usernames and the expected administrator policy. Ordinary users need an explicit
 DSM App privilege grant; enabling `dsm-users` does not grant that permission.
 
-## Known blockers
+## SDK regression and remaining boundaries
 
-Native start can report success and subsequently lose the gateway. Jellyfin's
-startup-status server temporarily listens on the final port, then closes it
-before the main server binds it again. Device socket observations show the
-loopback upstream port disappearing during this transition. The SDK host-network
-supervisor accepts the first listener, then treats the missing port as a fatal
-`COMPOSE_NETWORK_NOT_READY` policy failure. SDK host readiness currently does not
-check `compose.web.health`, unlike bridge readiness. The wrapper declares
-`/System/Ping` (200 only in the main application; the startup-status server
-returns 503), so a future SDK host HTTP gate can distinguish these phases. This must be fixed in the
-SDK; increasing the total startup timeout does not resolve early admission.
-No guard is disabled and runtime does not gain root privileges. To isolate OIDC
-compatibility, acceptance can start the existing generated package-account start
-script only after the backend is stable. This diagnostic action is not a passing
-native lifecycle result or a production workaround.
+A fresh `12.2-0001` install using the exact source commits above selects the
+fixture share and starts through the native package lifecycle. Native stop exits
+the container; native start returns success and remains running afterward, with
+`/System/Ping` HTTP 200 and the gateway serving requests. No manual start hook is
+used. Inspect reports `host-uid-listener-health`: the CLI passes the declared HTTP
+health to the daemon, which waits through the startup-listener handoff.
+
+Installation/start still emit a registry probe `COMPOSE_IMAGE_DENIED` message;
+the pinned image is already cached and the native operations succeed. This
+regression does not prove an uncached registry pull.
+
+A focused browser run opens the DSM menu and verifies one-click administrator
+SSO, signed-sub JIT and native administrator policy. The opt-in authenticated
+denied-account browser test passes with HTTP 403 and the stable HTML error code
+`dsm_app_privilege_denied`.
+Only this package's App privilege fixture is changed, then restored with readback.
+Anonymous refusal and the broader media/account tests retain their earlier
+acceptance evidence from SDK `6f58211ce8cd0f6a7bbb41ed4dac883fca036e5c` and CLI
+`86631612d385e58cb8745ba1431eb5ca4b087cb5`; those broader tests were not rerun.
+Build `0002` was only an unpublished upgrade-test fixture;
+`12.2-0001` remains the initial package version.
 
 The SDK automatic browser bridge redirects the plugin's hidden initialization
 iframe and causes repeated SSO. The wrapper uses native login branding's one-click
@@ -52,13 +59,10 @@ does not provide a client passthrough. Native client access is unsupported; Web
 SSO does not establish client compatibility. Native session lifetime and DSM
 account deletion/revocation remain separate boundaries.
 
-Anonymous gateway requests receive 401. The authenticated denied-account browser e2e expects 403 and fails with actual
-503. Admission remains closed. The SDK OIDC CGI does not classify
-`api.ErrAppPrivilegeDenied` as `access_denied`, so it produces
-`temporarily_unavailable`. Preserve the 403 assertion as a regression test and
-fix the mapping in the SDK. Set `JELLYFIN_E2E_DENIED=1` only for the separate
-negative run after an administrator denies the fixture account this package,
-then restore the previous App privilege rule.
+Anonymous gateway requests receive 401. Set `JELLYFIN_E2E_DENIED=1` only for the
+separate denied-account run after an administrator denies the fixture account
+this package, then restore the previous App privilege rule. The expected status
+is 403; do not weaken the assertion for verification failures.
 
 The image's default healthcheck targets 8096. The wrapper declares an explicit
 check of the configured loopback port and the exact `Healthy` response body.
@@ -105,5 +109,5 @@ JSON files through the shared DSM login helper. Run the ordinary suite with
 `npm run e2e`. Run the opt-in denied-account test separately with
 `JELLYFIN_E2E_DENIED=1 npm run e2e -- --grep 'denied DSM'` after denying only this
 package to the reader account; restore the previous rule and read it back.
-The expected denied status is deliberately 403, so this run remains red against
-the current SDK's actual 503. Keep profiles, screenshots and report output ignored.
+The expected denied status is 403. Keep profiles, screenshots and report output
+ignored.

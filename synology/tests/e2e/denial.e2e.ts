@@ -23,4 +23,5 @@ test('denied DSM App privilege returns 403',{
   page.goto(authorize.href),
  ]);
  expect(refused.status()).toBe(403);
+ expect(await refused.text()).toContain('data-error-code="dsm_app_privilege_denied"');
 });

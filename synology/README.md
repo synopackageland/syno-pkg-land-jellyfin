@@ -2,7 +2,9 @@
 
 This wrapper uses the unmodified official Jellyfin 12.2 image, the unmodified
 SSO Authentication 4.0.0.4 plugin, and the embedded SDK OIDC provider.
-The development SPK is `SynoPkgJellyfin` / `12.2-0002` / x86_64.
+The development SPK is `SynoPkgJellyfin` / `12.2-0001` / x86_64.
+Build `0002` was an unpublished upgrade-test fixture; the initial version remains
+`12.2-0001`.
 
 The native install wizard selects an existing Shared Folder for `/media`, mounted
 read-only. Selection does not grant access: in DSM Shared Folder permissions,
@@ -18,12 +20,13 @@ commits. Do not describe its HEAD as the source tree of the pinned release image
 
 Use Node 24 and Go 1.26.9 on a Linux build host, with access to the released SDK
 module. The dependency pins remain at released 0.19.0. Shared-folder selection
-requires the unreleased SDK and CLI changes below; the released-only build is
-currently blocked and this development SPK must not be published.
+and host App-health readiness require the unreleased SDK and CLI changes below.
+The released-only build is currently blocked; this development SPK must not be
+published.
 
 For development acceptance, check out SDK
-`6f58211ce8cd0f6a7bbb41ed4dac883fca036e5c` and CLI
-`86631612d385e58cb8745ba1431eb5ca4b087cb5` in temporary directories, build the CLI,
+`54c88fcddc0abcd3831ce0172329cb251b491f16` and CLI
+`5eee189e5291e501aacb7eb688dc9cbef464048e` in temporary directories, build the CLI,
 and set `SYNOPKGLAND_SDK_DIR` to the SDK checkout when invoking that CLI.
 In the CLI checkout run `npm ci --ignore-scripts` followed by
 `./node_modules/.bin/tsc --declaration false`; declaration emission currently
@@ -39,7 +42,7 @@ python3 scripts/render.py
 npm test
 node "$CLI_BIN" check --json
 node "$CLI_BIN" build --arch x86_64 --json
-node "$CLI_BIN" inspect dist/SynoPkgJellyfin-12.2-0002-x86_64.spk --json
+node "$CLI_BIN" inspect dist/SynoPkgJellyfin-12.2-0001-x86_64.spk --json
 ```
 
 `render.py` verifies the original plugin ZIP's pinned SHA-256 before embedding
@@ -58,9 +61,10 @@ users never type a separate Jellyfin password for Web SSO.
 Only supported native setup/configuration APIs and config files are used.
 
 The first-configuration adapter uses loopback port 29497 and stops before the
-configured server starts on loopback port 29496. Jellyfin also briefly replaces
-its startup-status listener at each process launch; current SDK host readiness
-can admit this listener too early and then stop the gateway during the handoff. OIDC issuer port 29490 stays loopback.
+configured server starts on loopback port 29496. Jellyfin briefly replaces its
+startup-status listener at each process launch. The development SDK waits for
+`/System/Ping` to return exactly HTTP 200 before admitting the backend; inspect
+reports `host-uid-listener-health`. OIDC issuer port 29490 stays loopback.
 HTTPS 29443 is the SDK entry. Auxiliary discovery is disabled. The explicit host
 network is required to reach the SDK loopback issuer; it is unrelated to DLNA.
 
@@ -103,13 +107,14 @@ See [validation](docs/validation.md) for the verified boundary and limitations.
 
 ## Upgrade
 
-After committing a clean tree, `bash synology/upgrade.sh v12.2 3` merges the
+After committing a clean tree, `bash synology/upgrade.sh v12.2 2` merges the
 explicit upstream tag, re-pins the official image, updates source provenance and
 builds. Upstream version strings retain two or three numeric components; build
 numbers increase within a release and restart at `0001` for a new release.
 A changed upstream/plugin requires fresh compatibility and device acceptance.
 TODO: replace the development source override with released SDK/CLI versions
-once Shared Folder selection and the host-readiness issue are released.
+once Shared Folder selection, host App-health readiness and App privilege denial
+fixes are released.
 This repository does not enable Actions or publish releases/catalog entries.
 
 ## Licenses and source

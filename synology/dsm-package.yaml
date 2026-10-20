@@ -2,7 +2,7 @@
   "schema": 2,
   "package": "SynoPkgJellyfin",
   "version": "12.2",
-  "build": 2,
+  "build": 1,
   "displayname": "Jellyfin",
   "description": "Jellyfin media server with DSM sign-in and an install-selected, read-only media folder.",
   "maintainer": "synopackageland",
