@@ -1,0 +1,121 @@
+{
+  "schema": 2,
+  "package": "SynoPkgJellyfin",
+  "version": "12.2",
+  "build": 1,
+  "displayname": "Jellyfin",
+  "description": "Jellyfin media server with DSM sign-in and an install-selected, read-only media folder.",
+  "maintainer": "synopackageland",
+  "os_min_ver": "7.2.1-69057",
+  "arches": [
+    "x86_64"
+  ],
+  "entry": "app-privilege",
+  "capabilities": {
+    "composeMounts": true
+  },
+  "install": {
+    "sharedFolder": {
+      "mode": "select",
+      "key": "media",
+      "permission": "ro"
+    }
+  },
+  "compose": {
+    "sdk": "0.19.0",
+    "files": [
+      "compose.yaml"
+    ],
+    "shares": {
+      "media": {
+        "select": "install",
+        "mounts": [
+          {
+            "service": "jellyfin",
+            "target": "/media"
+          }
+        ]
+      }
+    },
+    "startup_timeout_seconds": 600,
+    "services": {
+      "jellyfin": {
+        "network": "host",
+        "listener": {
+          "env": "JELLYFIN_BIND",
+          "format": "host"
+        },
+        "storage_init": {
+          "directories": [
+            {
+              "base": "/var/tmp",
+              "path": "jellyfin"
+            }
+          ],
+          "runtime": {
+            "environment": {
+              "OIDC_SECRET": {
+                "oidc_client": "jellyfin"
+              },
+              "BOOTSTRAP_PASSWORD": {
+                "secret": "bootstrap"
+              }
+            },
+            "files": [
+              {
+                "target": "/var/tmp/jellyfin/start.sh",
+                "content": "#!/bin/sh\n# Runtime runs only as the package UID. No upstream source or image is changed.\nset -eu\numask 077\nstate=/var/tmp/jellyfin\nplugin=\"$state/config/plugins/SSO Authentication_4.0.0.4\"\nmkdir -p \"$plugin\" \"$state/config/config\" \"$state/cache\"\n# Build-verified release files arrive in bounded base64 argv chunks, never downloaded at startup.\nwhile [ \"$#\" -gt 0 ]; do\n    file=$1; hash=$2; count=${3#chunks:}; shift 3\n    case \"$file\" in SSO-Auth.dll|Duende.IdentityModel.dll|Duende.IdentityModel.OidcClient.dll|meta.json) ;; *) exit 1;; esac\n    : > \"$plugin/$file.pending\"\n    while [ \"$count\" -gt 0 ]; do\n        printf '%s' \"$1\" | base64 -d >> \"$plugin/$file.pending\"\n        shift; count=$((count-1))\n    done\n    printf '%s  %s\\n' \"$hash\" \"$plugin/$file.pending\" | sha256sum -c - >/dev/null\n    mv \"$plugin/$file.pending\" \"$plugin/$file\"\ndone\n[ \"${JELLYFIN_BIND:?}\" = 127.0.0.1 ] || exit 1\ncase \"${OIDC_SECRET:?}${BOOTSTRAP_PASSWORD:?}\" in *[!0-9a-f]*) exit 1;; esac\n[ \"${#OIDC_SECRET}\" -eq 64 ] && [ \"${#BOOTSTRAP_PASSWORD}\" -eq 64 ] || exit 1\n# The SDK may regenerate secrets after delete-data while named volumes remain.\n# Retain only the native bootstrap credential in the same private App volume.\nif [ ! -f \"$state/bootstrap.secret\" ]; then\n    printf '%s' \"$BOOTSTRAP_PASSWORD\" > \"$state/bootstrap.secret\"\nfi\nBOOTSTRAP_PASSWORD=$(cat \"$state/bootstrap.secret\")\ncase \"$BOOTSTRAP_PASSWORD\" in *[!0-9a-f]*) exit 1;; esac\n[ \"${#BOOTSTRAP_PASSWORD}\" -eq 64 ] || exit 1\noidc_fingerprint=$(printf '%s' \"$OIDC_SECRET\" | sha256sum | cut -d ' ' -f 1)\nbudget=${SYNOPKGLAND_STARTUP_BUDGET_SECONDS:?}\ncase \"$budget\" in ''|*[!0-9]*) exit 1;; esac\ndeadline=$(($(date +%s)+budget))\nnetwork() {\n    printf '<?xml version=\"1.0\"?><NetworkConfiguration><InternalHttpPort>%s</InternalHttpPort><EnableHttps>false</EnableHttps><EnableIPv4>true</EnableIPv4><EnableIPv6>false</EnableIPv6><AutoDiscovery>false</AutoDiscovery><EnableUPnP>false</EnableUPnP><LocalNetworkAddresses><string>%s</string></LocalNetworkAddresses><KnownProxies><string>127.0.0.1</string></KnownProxies></NetworkConfiguration>\\n' \"$1\" \"$JELLYFIN_BIND\" > \"$state/config/config/network.xml\"\n}\ncleanup_secrets() { rm -f \"$state/auth.json\" \"$state/curl-auth.conf\" \"$state/provider-live.json\" \"$state/library-list.json\"; }\ntrap cleanup_secrets EXIT\nserver=''\nstop() { cleanup_secrets; if [ -n \"$server\" ]; then kill \"$server\" 2>/dev/null || true; wait \"$server\" 2>/dev/null || true; fi; }\ntrap 'stop; exit 1' INT TERM HUP\nif [ ! -f \"$state/bootstrap.complete\" ] || [ \"$(cat \"$state/oidc.fingerprint\" 2>/dev/null || true)\" != \"$oidc_fingerprint\" ]; then\n    network 29497\n    /jellyfin/jellyfin &\n    server=$!\n    until [ \"$(curl -fsS --max-time 2 http://127.0.0.1:29497/health 2>/dev/null || true)\" = Healthy ]; do\n        kill -0 \"$server\" 2>/dev/null || { echo 'Bootstrap server failed' >&2; exit 1; }\n        [ \"$(date +%s)\" -lt \"$deadline\" ] || { stop; echo 'Bootstrap deadline exceeded' >&2; exit 1; }\n        sleep 1\n    done\n    api=http://127.0.0.1:29497\n    info=$(curl -fsS --max-time 10 \"$api/System/Info/Public\")\n    if ! printf '%s' \"$info\" | grep -iq '\"StartupWizardCompleted\"[[:space:]]*:[[:space:]]*true'; then\n        curl -fsS --max-time 10 \"$api/Startup/User\" >/dev/null\n        printf '{\"Name\":\"package-bootstrap\",\"Password\":\"%s\"}' \"$BOOTSTRAP_PASSWORD\" > \"$state/auth.json\"\n        curl -fsS --max-time 10 -H 'Content-Type: application/json' -X POST --data-binary @\"$state/auth.json\" \"$api/Startup/User\" >/dev/null\n        curl -fsS --max-time 10 -X POST \"$api/Startup/Complete\" >/dev/null\n    fi\n    printf '{\"Username\":\"package-bootstrap\",\"Pw\":\"%s\"}' \"$BOOTSTRAP_PASSWORD\" > \"$state/auth.json\"\n    response=$(curl -fsS --max-time 10 -H 'Content-Type: application/json' -H 'Authorization: MediaBrowser Client=\"Package Setup\", Device=\"Package\", DeviceId=\"package-bootstrap\", Version=\"1\"' --data-binary @\"$state/auth.json\" \"$api/Users/AuthenticateByName\")\n    token=$(printf '%s' \"$response\" | sed -n 's/.*\"AccessToken\"[[:space:]]*:[[:space:]]*\"\\([0-9a-fA-F]*\\)\".*/\\1/p')\n    [ -n \"$token\" ] || { stop; echo 'Bootstrap authentication failed' >&2; exit 1; }\n    printf 'header = \"Authorization: MediaBrowser Token=%s\"\\n' \"$token\" > \"$state/curl-auth.conf\"\n    sed \"s/__CLIENT_SECRET__/$OIDC_SECRET/g\" \"$state/provider.json\" > \"$state/provider-live.json\"\n    curl -fsS --max-time 10 -K \"$state/curl-auth.conf\" -H 'Content-Type: application/json' --data-binary @\"$state/provider-live.json\" \"$api/sso/OID/Add/dsm\" >/dev/null\n    # The supported branding API provides a one-click fallback after native hash-route logout.\n    curl -fsS --max-time 10 -K \"$state/curl-auth.conf\" -H 'Content-Type: application/json' --data-binary @\"$state/branding.json\" \"$api/System/Configuration/Branding\" >/dev/null\n    curl -fsS --max-time 10 -K \"$state/curl-auth.conf\" \"$api/Library/VirtualFolders\" > \"$state/library-list.json\"\n    if ! grep -q '\"Name\"[[:space:]]*:[[:space:]]*\"Media\"' \"$state/library-list.json\"; then\n        curl -fsS --max-time 10 -K \"$state/curl-auth.conf\" -H 'Content-Type: application/json' --data-binary @\"$state/library.json\" \"$api/Library/VirtualFolders?name=Media&collectionType=movies&refreshLibrary=false\" >/dev/null\n    fi\n    printf '%s' \"$oidc_fingerprint\" > \"$state/oidc.fingerprint\"\n    kill \"$server\"; wait \"$server\" || true; server=''\nfi\n# Only the final, configured server uses the SDK health/listen port.\nnetwork 29496\nif [ -f \"$state/bootstrap.complete\" ]; then\n    cleanup_secrets\n    trap - INT TERM HUP\n    exec /jellyfin/jellyfin\nfi\n/jellyfin/jellyfin &\nserver=$!\nuntil [ \"$(curl -fsS --max-time 2 http://127.0.0.1:29496/health 2>/dev/null || true)\" = Healthy ]; do\n    kill -0 \"$server\" 2>/dev/null || { cleanup_secrets; exit 1; }\n    [ \"$(date +%s)\" -lt \"$deadline\" ] || { stop; exit 1; }\n    sleep 1\ndone\n# A refresh is asynchronous: request it from the final process, which remains alive.\ncurl -fsS --max-time 10 -K \"$state/curl-auth.conf\" -X POST http://127.0.0.1:29496/Library/Refresh >/dev/null\ncleanup_secrets\n: > \"$state/bootstrap.complete\"\nwait \"$server\"\n"
+              },
+              {
+                "target": "/var/tmp/jellyfin/provider.json",
+                "content": "{\"OidEndpoint\": \"http://127.0.0.1:29490\", \"OidClientId\": \"jellyfin\", \"OidSecret\": \"__CLIENT_SECRET__\", \"Enabled\": true, \"EnableAuthorization\": true, \"EnableAllFolders\": true, \"AdminRoles\": [\"admin\"], \"Roles\": [], \"RoleClaim\": \"groups\", \"OidScopes\": [\"groups\"], \"DefaultUsernameClaim\": \"sub\", \"EnableLiveTv\": false, \"EnableLiveTvManagement\": false, \"NewPath\": true, \"SchemeOverride\": \"https\", \"DisableHttps\": true, \"DisablePushedAuthorization\": true, \"DoNotValidateEndpoints\": false, \"DoNotValidateIssuerName\": false}"
+              },
+              {
+                "target": "/var/tmp/jellyfin/branding.json",
+                "content": "{\"LoginDisclaimer\": \"<form action=\\\"/sso/OID/start/dsm\\\"><button class=\\\"raised block emby-button button-submit\\\">Sign in with DSM</button></form>\", \"CustomCss\": \".disclaimerContainer { display: block; }\"}"
+              },
+              {
+                "target": "/var/tmp/jellyfin/library.json",
+                "content": "{\"LibraryOptions\": {\"PathInfos\": [{\"Path\": \"/media\"}], \"EnableRealtimeMonitor\": false, \"EnableInternetProviders\": false, \"EnableAutomaticSeriesGrouping\": false}}"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "web": {
+      "service": "jellyfin",
+      "port": 29496,
+      "health": {
+        "path": "/System/Ping",
+        "status": 200
+      }
+    },
+    "network": {
+      "egress": "internet"
+    }
+  },
+  "identity_gateway": {
+    "sdk": "0.19.0",
+    "mode": "oidc",
+    "access": "dsm-users",
+    "listen": {
+      "https": 29443
+    },
+    "oidc": {
+      "issuer_port": 29490,
+      "clients": [
+        {
+          "id": "jellyfin",
+          "redirect_paths": [
+            "/sso/OID/redirect/dsm"
+          ],
+          "pkce": true
+        }
+      ]
+    }
+  },
+  "ui": {
+    "launch": "new-page"
+  }
+}

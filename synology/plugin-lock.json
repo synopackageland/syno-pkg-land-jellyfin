@@ -1,0 +1,9 @@
+{
+  "repository": "9p4/jellyfin-plugin-sso",
+  "version": "4.0.0.4",
+  "targetAbi": "10.11.0.0",
+  "url": "https://github.com/9p4/jellyfin-plugin-sso/releases/download/v4.0.0.4/sso-authentication_4.0.0.4.zip",
+  "sha256": "c09f16ba31059a434ddd7f811e4f9608d4b4c4514cc80a5bf1ca33bee61e1107",
+  "source_url": "https://github.com/9p4/jellyfin-plugin-sso/archive/refs/tags/v4.0.0.4.tar.gz",
+  "source_sha256": "453c279c82914584e12c679c796bd043c14b19aa432038d22f9aba24ebbb97cf"
+}

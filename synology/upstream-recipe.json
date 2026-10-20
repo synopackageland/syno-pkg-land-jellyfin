@@ -1,0 +1,6 @@
+{
+  "kind": "official-image",
+  "repository": "jellyfin/jellyfin",
+  "service": "jellyfin",
+  "imageTag": "version"
+}

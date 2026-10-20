@@ -1,0 +1,15 @@
+Jellyfin: https://github.com/jellyfin/jellyfin/tree/v12.2
+Official image: jellyfin/jellyfin:12.2 (immutable digest in compose.image.yaml)
+Upstream license and notices are preserved at the repository root.
+
+SSO Authentication: https://github.com/9p4/jellyfin-plugin-sso/tree/v4.0.0.4
+Release artifact and source are bundled unchanged in vendor/.
+GPL-3.0; see LICENSES/SSO-GPL-3.0.txt and plugin-lock.json.
+The release contains Duende.IdentityModel.OidcClient and Duende.IdentityModel
+assemblies. Their upstream dependencies and source build instructions are in the
+bundled plugin source project. No plugin or Jellyfin source was patched.
+
+Syno Package Land SDK/CLI/templates: dependency pins remain released 0.19.0.
+Development source builds use the exact SDK/CLI commits documented in README.md.
+Template notice: LICENSES/TEMPLATE.txt.
+Wrapper integration: Copyright (c) 2026 synopkgland, GPL-3.0-or-later.
