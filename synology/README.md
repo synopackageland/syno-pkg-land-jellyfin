@@ -136,7 +136,15 @@ again it initializes VAAPI once more. HWA is a package capability, independent o
 DSM sign-in or media-folder permissions. Hardware removal requires reinstalling
 or upgrading to regenerate the SDK's device mappings.
 
-GPU native-resource timing, real VAAPI playback and QSV remain unverified. Local
+The tested DSM provider adds NET_BIND_SERVICE in its generated admin Compose
+file, even with an explicit empty source capability list. That fails this
+candidate's zero-cap_add boundary, so hardware validation and release remain
+blocked. This wrapper does not patch the native worker or recreate containers
+through a privileged workaround. Native package group authorization was observed;
+real VAAPI playback, its CPU comparison, QSV and GPU stop/start remain unverified.
+The no-GPU software path completed a real H.264 playback transcode with libx264.
+
+Local
 configuration tests and a build/inspect result are not a hardware-transcoding
 acceptance result. A supported Intel iGPU NAS with a healthy Container Manager
 is required before declaring this feature ready.
