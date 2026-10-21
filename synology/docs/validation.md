@@ -1,5 +1,50 @@
 # Validation scope
 
+## Intel HWA development acceptance
+
+The unpublished source-override build uses SDK `5f69ba084dd2a4a7826cecb340b845d540c21f2e`, CLI `71ef896f62b7a12af194f593f4840aa5125355ff` and adapter
+code `4c85b1377f866eb7d1fa078810cfb2d721ada910`. Published 0.20.0 dependency pins stay unchanged; this does not certify
+a released dependency build with GPU support. The digest-pinned official image
+was cached; this is not an uncached registry-pull acceptance.
+
+A fresh native installation with empty App volumes on Intel Celeron J4025,
+DSM 7.4 and Container Manager 24.0.2 initialized VAAPI automatically after the
+upstream FFmpeg probe. The DSM-retained native package identity was left in place.
+Readback showed the nonroot package UID, native videodriver supplementary GID,
+only renderD128 mapped with rw access, read-only media, no privileged container,
+cap_drop ALL and no-new-privileges. DSM added NET_BIND_SERVICE to the bounding
+set; effective, permitted and ambient capabilities remained zero.
+
+A synthetic 30-second H.264 1080p source was requested through Jellyfin's real
+HTTP playback-transcode route at 720p. Automatic VAAPI used h264_vaapi, software
+used libx264, and optional native QSV used h264_qsv. All returned HTTP 200 and
+complete outputs that decoded without errors. Each run removed only the
+package-private transcode cache and captured distinct new FFmpeg logs.
+
+| Encoder | Container CPU seconds | Mean container CPU |
+| --- | ---: | ---: |
+| Automatic VAAPI | 4.00 | 10.48% over 38.18 s |
+| Software | 29.40 | 48.54% over 60.57 s |
+
+100% means one CPU core. CPU time fell about 86% for this one clip; these are
+container-counter deltas using Docker's sample timestamps, including App work.
+They are not a sustained-load or image-quality benchmark. Native QSV was restored
+to VAAPI after its successful optional test.
+
+Native package stop/start completed successfully. Readback preserved the native
+GID and render-only mapping, and another real playback transcode used h264_vaapi
+with a complete, error-free client decode. Native uninstall and independent
+readback then confirmed the test package, project, containers, volumes and media
+share absent. The package identity and official container engine were retained;
+no daemon, mirror, CA, DSM setting or reboot was needed.
+
+A separate no-GPU DSM 7.3.2 installation using the same development SPK emitted
+software status, no GPU devices or added supplementary groups, and encoding type none.
+Real 30-second playback used libx264, returned HTTP 200 and decoded completely.
+Native uninstall and independent readback confirmed the test package, containers,
+project volumes and media share absent; DSM package identity and the official
+container engine were retained.
+
 ## Released dependency refresh
 
 CLI/templates/SDK/App 0.20.0, executor/v0.20.0 and UI 0.12.5 are used without
@@ -102,10 +147,10 @@ peak was 615526400 bytes (about 587 MiB). Across twelve bounded startup samples,
 the largest observed CPU value was 99.85% of one core.
 A bounded software-transcode probe returned HTTP 200 and 35704 MP4 bytes;
 server logs confirmed libx264, scaling to at most 160 by 90, and FFmpeg exit 0.
-These observations cover a two-second fixture, not a sustained-load benchmark. No GPU or DLNA is enabled.
-Hardware transcoding needs a reviewed SDK device/cgroup authority for `/dev/dri`;
-DLNA needs explicit discovery/multicast ingress beyond the loopback host policy.
-Neither capability is implemented or estimated as production-ready here.
+These earlier resource observations cover a two-second software fixture. The
+reviewed HWA candidate and its separate device evidence are described above.
+DLNA remains disabled and needs explicit discovery/multicast ingress beyond the
+loopback host policy.
 
 Named volumes and selected shares are retained by the SDK uninstall contract,
 including delete-data requests. Test cleanup must remove only the exact disposable
