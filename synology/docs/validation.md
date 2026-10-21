@@ -1,19 +1,37 @@
-# Development acceptance
+# Validation scope
 
-This is a development integration, not a publishable SPK. Dependencies remain
-pinned to released 0.19.0. Current development acceptance uses SDK commit
-`54c88fcddc0abcd3831ce0172329cb251b491f16` and CLI commit
-`5eee189e5291e501aacb7eb688dc9cbef464048e` through a temporary source build.
-No release, registry or catalog entry is part of this change.
+## Released dependency refresh
+
+CLI/templates/SDK/App 0.20.0, executor/v0.20.0 and UI 0.12.5 are used without
+source overrides. npm lock integrity matches the public registry. The unchanged
+x86_64 initial SPK version passes affected tests, check, build and inspect with
+`findings=[]`. The official image and adapter behavior are unchanged.
+
+Fresh installation on DSM 7.3.2 selected an owned synthetic-media share with
+read-only package-account ACL. Native start succeeded. DSM main-menu sign-in,
+media read/playback and native stop/start passed. Native uninstall was followed
+by independent readback: package, containers, project, test-only volumes and
+share were absent. DSM-retained package identities were left in place.
+
+The device's native registry preflight reported `COMPOSE_IMAGE_DENIED`, while
+installation/start completed successfully using the pinned cached image. This
+is not a clean image-pull test. No daemon, mirror, CA or DSM settings changed.
+Browser acceptance used certificate-error tolerance only in its disposable test
+browser. Other lifecycle and identity boundaries below retain their earlier
+bounded evidence; no reboot or broader certification was repeated.
+
+Inspect confirms `host-uid-listener-health` with `/System/Ping` HTTP 200.
+
+The release uses published CLI/templates/SDK/App 0.20.0, executor/v0.20.0 and
+UI 0.12.5. Source overrides are not used for release builds. The historical device
+acceptance below used the reviewed development implementation; the release
+dependency refresh is verified separately before publication.
 
 ## Verified boundaries
 
 - The pinned official Jellyfin 12.2 image loads the original SSO Authentication
   4.0.0.4 DLLs and reaches a `Healthy` response as a non-root UID. Plugin
   `targetAbi` 10.11.0.0 is a minimum ABI, not an exact version equality check.
-- Source CLI type checking/build succeeds with declaration output disabled. Its
-  normal declaration build encounters TS2742 in the optional e2e helper's inferred
-  model type. No CLI source is patched for the local executable build.
 - SDK declarations pass check, SPK build and inspect on Linux.
 - Native installation selects an existing share. DSM ACL readback grants the
   package account read access. Container mount inspection reports `/media` with
@@ -30,7 +48,7 @@ DSM App privilege grant; enabling `dsm-users` does not grant that permission.
 
 ## SDK regression and remaining boundaries
 
-A fresh `12.2-0001` install using the exact source commits above selects the
+A fresh `12.2-0001` install using the reviewed development implementation selects the
 fixture share and starts through the native package lifecycle. Native stop exits
 the container; native start returns success and remains running afterward, with
 `/System/Ping` HTTP 200 and the gateway serving requests. No manual start hook is
@@ -46,9 +64,9 @@ SSO, signed-sub JIT and native administrator policy. The opt-in authenticated
 denied-account browser test passes with HTTP 403 and the stable HTML error code
 `dsm_app_privilege_denied`.
 Only this package's App privilege fixture is changed, then restored with readback.
-Anonymous refusal and the broader media/account tests retain their earlier
+Anonymous refusal and ordinary-user media/account tests retain their earlier
 acceptance evidence from SDK `6f58211ce8cd0f6a7bbb41ed4dac883fca036e5c` and CLI
-`86631612d385e58cb8745ba1431eb5ca4b087cb5`; those broader tests were not rerun.
+`86631612d385e58cb8745ba1431eb5ca4b087cb5`; the ordinary-user tests were not rerun in the release refresh.
 Build `0002` was only an unpublished upgrade-test fixture;
 `12.2-0001` remains the initial package version.
 

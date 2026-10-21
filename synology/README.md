@@ -1,8 +1,8 @@
-# Jellyfin for DSM — development OIDC proof
+# Jellyfin for DSM
 
 This wrapper uses the unmodified official Jellyfin 12.2 image, the unmodified
 SSO Authentication 4.0.0.4 plugin, and the embedded SDK OIDC provider.
-The development SPK is `SynoPkgJellyfin` / `12.2-0001` / x86_64.
+The SPK is `SynoPkgJellyfin` / `12.2-0001` / x86_64.
 Build `0002` was an unpublished upgrade-test fixture; the initial version remains
 `12.2-0001`.
 
@@ -18,31 +18,18 @@ commits. Do not describe its HEAD as the source tree of the pinned release image
 
 ## Build
 
-Use Node 24 and Go 1.26.9 on a Linux build host, with access to the released SDK
-module. The dependency pins remain at released 0.19.0. Shared-folder selection
-and host App-health readiness require the unreleased SDK and CLI changes below.
-The released-only build is currently blocked; this development SPK must not be
-published.
-
-For development acceptance, check out SDK
-`54c88fcddc0abcd3831ce0172329cb251b491f16` and CLI
-`5eee189e5291e501aacb7eb688dc9cbef464048e` in temporary directories, build the CLI,
-and set `SYNOPKGLAND_SDK_DIR` to the SDK checkout when invoking that CLI.
-In the CLI checkout run `npm ci --ignore-scripts` followed by
-`./node_modules/.bin/tsc --declaration false`; declaration emission currently
-hits TS2742 in its optional e2e helper. The executable source is unchanged.
-Do not change package pins to an unpublished version.
+Use Node 24 and Go 1.26.9 on a Linux build host with access to the released SDK
+module. CLI/templates/SDK/App are pinned to 0.20.0, executor to executor/v0.20.0
+and UI to 0.12.5. Install the locked published dependencies and run:
 
 ```sh
-export SYNOPKGLAND_SDK_DIR=/absolute/path/to/sdk-checkout
-CLI_BIN=/absolute/path/to/cli-checkout/dist/bin.js
 cd synology
 npm ci --ignore-scripts
 python3 scripts/render.py
 npm test
-node "$CLI_BIN" check --json
-node "$CLI_BIN" build --arch x86_64 --json
-node "$CLI_BIN" inspect dist/SynoPkgJellyfin-12.2-0001-x86_64.spk --json
+npx --no-install synopkgland check --json
+npx --no-install synopkgland build --arch x86_64 --json
+npx --no-install synopkgland inspect dist/SynoPkgJellyfin-12.2-0001-x86_64.spk --json
 ```
 
 `render.py` verifies the original plugin ZIP's pinned SHA-256 before embedding
@@ -62,7 +49,7 @@ Only supported native setup/configuration APIs and config files are used.
 
 The first-configuration adapter uses loopback port 29497 and stops before the
 configured server starts on loopback port 29496. Jellyfin briefly replaces its
-startup-status listener at each process launch. The development SDK waits for
+startup-status listener at each process launch. The SDK waits for
 `/System/Ping` to return exactly HTTP 200 before admitting the backend; inspect
 reports `host-uid-listener-health`. OIDC issuer port 29490 stays loopback.
 HTTPS 29443 is the SDK entry. Auxiliary discovery is disabled. The explicit host
@@ -98,7 +85,7 @@ boots the actual pinned image twice with retained native data and regenerated
 SDK secrets, checks provider synchronization and credential mode, and removes
 only its randomly named test container and volume.
 
-Named volumes are App data. SDK 0.19.0 retains them even when Package Center
+Named volumes are App data. SDK 0.20.0 retains them even when Package Center
 **delete data** is selected and reports `COMPOSE_DATA_RETAINED`; do not claim
 complete data deletion. Test-only fixture cleanup must verify the exact owned
 volume inventory. No root cleanup hook is installed.
@@ -112,10 +99,7 @@ explicit upstream tag, re-pins the official image, updates source provenance and
 builds. Upstream version strings retain two or three numeric components; build
 numbers increase within a release and restart at `0001` for a new release.
 A changed upstream/plugin requires fresh compatibility and device acceptance.
-TODO: replace the development source override with released SDK/CLI versions
-once Shared Folder selection, host App-health readiness and App privilege denial
-fixes are released.
-This repository does not enable Actions or publish releases/catalog entries.
+Build and upgrade scripts do not enable Actions or publish releases/catalog entries.
 
 ## Licenses and source
 
@@ -124,4 +108,4 @@ release ZIP and matching source archive are in `vendor/`, with SHA-256 provenanc
 in `plugin-lock.json`. Its GPL-3.0 license is in `LICENSES/SSO-GPL-3.0.txt`.
 The SDK-generated template license is in `LICENSES/TEMPLATE.txt`.
 The wrapper adapter is GPL-3.0-or-later; upstream binaries retain their own licenses.
-See [NOTICE](NOTICE). This proof is not a complete redistribution/release audit.
+See [NOTICE](NOTICE). The SPK references the official image and does not redistribute its layers.
