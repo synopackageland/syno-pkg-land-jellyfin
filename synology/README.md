@@ -2,13 +2,13 @@
 
 This wrapper uses the unmodified official Jellyfin 12.2 image, the unmodified
 SSO Authentication 4.0.0.4 plugin, and the embedded SDK OIDC provider.
-The SPK is `SynoPkgJellyfin` / `12.2-0001` / x86_64.
+The SPK is `SynoPkgJellyfin` / `12.2-0002` / x86_64.
 
 The native install wizard selects an existing Shared Folder for `/media`, mounted
 read-only. Selection does not grant access: in DSM Shared Folder permissions,
 choose **System internal user** and grant `SynoPkgJellyfin` read access.
-Configuration and cache use private named volumes. Intel GPU support is an
-opt-in candidate described below; DLNA is not enabled.
+Configuration and cache use private named volumes. Intel GPU support uses the
+SDK capability described below; DLNA is not enabled.
 
 All integration files are under `synology/`. Upstream source, plugin code and the
 registry image are unchanged. `upstream-source.json` identifies the release
@@ -17,11 +17,8 @@ commits. Do not describe its HEAD as the source tree of the pinned release image
 
 ## Build
 
-The GPU candidate needs matching SDK/CLI source overrides described under Intel
-hardware transcoding below; the released pins do not implement this declaration.
-
 Use Node 24 and Go 1.26.9 on a Linux build host with access to the released SDK
-module. CLI/templates/SDK/App are pinned to 0.20.0, executor to executor/v0.20.0
+module. CLI/templates/SDK/App are pinned to 0.21.0, executor to executor/v0.20.0
 and UI to 0.12.5. Install the locked published dependencies and run:
 
 ```sh
@@ -31,7 +28,7 @@ python3 scripts/render.py
 npm test
 npx --no-install synopkgland check --json
 npx --no-install synopkgland build --arch x86_64 --json
-npx --no-install synopkgland inspect dist/SynoPkgJellyfin-12.2-0001-x86_64.spk --json
+npx --no-install synopkgland inspect dist/SynoPkgJellyfin-12.2-0002-x86_64.spk --json
 ```
 
 `render.py` verifies the original plugin ZIP's pinned SHA-256 before embedding
@@ -87,7 +84,7 @@ boots the actual pinned image twice with retained native data and regenerated
 SDK secrets, checks provider synchronization and credential mode, and removes
 only its randomly named test container and volume.
 
-Named volumes are App data. SDK 0.20.0 retains them even when Package Center
+Named volumes are App data. The SDK retains them even when Package Center
 **delete data** is selected and reports `COMPOSE_DATA_RETAINED`; do not claim
 complete data deletion. Test-only fixture cleanup must verify the exact owned
 volume inventory. No root cleanup hook is installed.
@@ -114,11 +111,9 @@ See [NOTICE](NOTICE). The SPK references the official image and does not redistr
 
 ## Intel hardware transcoding
 
-This candidate opts Jellyfin into the SDK's native Intel render-device capability.
-It requires the SDK and CLI changes for `compose.devices.gpu`; the published
-0.20.0 pins remain until those changes are released. For development builds, set
-`SYNOPKGLAND_SDK_DIR` to the candidate SDK checkout and run the candidate CLI's
-`dist/bin.js` for check/build/inspect. Do not publish a source-override SPK.
+This package opts Jellyfin into the SDK's native Intel render-device capability
+through `compose.devices.gpu`, available in the published 0.21.x toolchain.
+Release builds use only published dependencies.
 
 On Intel iGPU models, the package maps only accepted `/dev/dri/renderD*` nodes,
 runs as the fixed package UID and obtains the numeric `videodriver` GID through
@@ -129,7 +124,7 @@ Probe failures report their exit code and select software. When successful, the 
 `encoding.xml` fields for VAAPI and the detected render path. Subsequent starts
 preserve encoder choices while hardware remains usable; QSV can be selected in
 Jellyfin's native dashboard after validation on the target device. Automatic QSV,
-HEVC/AV1 encoding, HDR tone mapping and non-Intel GPUs are outside this candidate.
+HEVC/AV1 encoding, HDR tone mapping and non-Intel GPUs are outside this release.
 
 Without a usable device or encoder, the adapter selects native software
 transcoding and retains unrelated encoding options. If hardware becomes usable
@@ -142,8 +137,8 @@ packages. The SDK requests no added capabilities; the nonroot package process
 with no-new-privileges has zero effective, permitted and ambient capabilities.
 This general DSM behavior does not block GPU acceptance.
 
-The development candidate completed real H.264 VAAPI and optional native QSV
+The reviewed implementation completed real H.264 VAAPI and optional native QSV
 playback transcoding on Intel Celeron J4025, with complete client decoding. The
 no-GPU software path also passed. See [validation scope](docs/validation.md) for
-source commits, CPU measurements and lifecycle boundaries. These observations
-do not certify other GPUs, codecs or released dependency builds.
+CPU measurements and lifecycle boundaries. The release verification is recorded separately there. These observations
+do not certify other GPUs or codecs.
