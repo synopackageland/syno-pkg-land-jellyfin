@@ -68,7 +68,7 @@ def manifest():
             "sharedFolder": {"mode": "select", "key": "media", "permission": "ro"}
         },
         "compose": {
-            "sdk": "0.19.0",
+            "sdk": "0.20.0",
             "files": ["compose.yaml"],
             "shares": {
                 "media": {
@@ -136,7 +136,7 @@ def manifest():
             "network": {"egress": "internet"},
         },
         "identity_gateway": {
-            "sdk": "0.19.0",
+            "sdk": "0.20.0",
             "mode": "oidc",
             "access": "dsm-users",
             "listen": {"https": 29443},
