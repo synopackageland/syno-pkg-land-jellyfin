@@ -5,6 +5,8 @@ umask 077
 state=/var/tmp/jellyfin
 plugin="$state/config/plugins/SSO Authentication_4.0.0.4"
 mkdir -p "$plugin" "$state/config/config" "$state/cache"
+. "$state/hwa.sh"
+hwa_setup "$state"
 # Build-verified release files arrive in bounded base64 argv chunks, never downloaded at startup.
 while [ "$#" -gt 0 ]; do
     file=$1; hash=$2; count=${3#chunks:}; shift 3

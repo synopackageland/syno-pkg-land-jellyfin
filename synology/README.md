@@ -3,13 +3,12 @@
 This wrapper uses the unmodified official Jellyfin 12.2 image, the unmodified
 SSO Authentication 4.0.0.4 plugin, and the embedded SDK OIDC provider.
 The SPK is `SynoPkgJellyfin` / `12.2-0001` / x86_64.
-Build `0002` was an unpublished upgrade-test fixture; the initial version remains
-`12.2-0001`.
 
 The native install wizard selects an existing Shared Folder for `/media`, mounted
 read-only. Selection does not grant access: in DSM Shared Folder permissions,
 choose **System internal user** and grant `SynoPkgJellyfin` read access.
-Configuration and cache use private named volumes. GPU and DLNA are not enabled.
+Configuration and cache use private named volumes. Intel GPU support is an
+opt-in candidate described below; DLNA is not enabled.
 
 All integration files are under `synology/`. Upstream source, plugin code and the
 registry image are unchanged. `upstream-source.json` identifies the release
@@ -17,6 +16,9 @@ source; the fork's main branch may already contain newer upstream development
 commits. Do not describe its HEAD as the source tree of the pinned release image.
 
 ## Build
+
+The GPU candidate needs matching SDK/CLI source overrides described under Intel
+hardware transcoding below; the released pins do not implement this declaration.
 
 Use Node 24 and Go 1.26.9 on a Linux build host with access to the released SDK
 module. CLI/templates/SDK/App are pinned to 0.20.0, executor to executor/v0.20.0
@@ -109,3 +111,32 @@ in `plugin-lock.json`. Its GPL-3.0 license is in `LICENSES/SSO-GPL-3.0.txt`.
 The SDK-generated template license is in `LICENSES/TEMPLATE.txt`.
 The wrapper adapter is GPL-3.0-or-later; upstream binaries retain their own licenses.
 See [NOTICE](NOTICE). The SPK references the official image and does not redistribute its layers.
+
+## Intel hardware transcoding
+
+This candidate opts Jellyfin into the SDK's native Intel render-device capability.
+It requires the SDK and CLI changes for `compose.devices.gpu`; the published
+0.20.0 pins remain until those changes are released. For development builds, set
+`SYNOPKGLAND_SDK_DIR` to the candidate SDK checkout and run the candidate CLI's
+`dist/bin.js` for check/build/inspect. Do not publish a source-override SPK.
+
+On Intel iGPU models, the package maps only accepted `/dev/dri/renderD*` nodes,
+runs as the fixed package UID and obtains the numeric `videodriver` GID through
+DSM's native resource. It uses neither root nor privileged containers. Before
+starting Jellyfin, its unchanged image's FFmpeg performs a bounded H.264 VAAPI
+encode probe. When successful, the first initialization writes Jellyfin's native
+`encoding.xml` fields for VAAPI and the detected render path. Subsequent starts
+preserve encoder choices while hardware remains usable; QSV can be selected in
+Jellyfin's native dashboard after validation on the target device. Automatic QSV,
+HEVC/AV1 encoding, HDR tone mapping and non-Intel GPUs are outside this candidate.
+
+Without a usable device or encoder, the adapter selects native software
+transcoding and retains unrelated encoding options. If hardware becomes usable
+again it initializes VAAPI once more. HWA is a package capability, independent of
+DSM sign-in or media-folder permissions. Hardware removal requires reinstalling
+or upgrading to regenerate the SDK's device mappings.
+
+GPU native-resource timing, real VAAPI playback and QSV remain unverified. Local
+configuration tests and a build/inspect result are not a hardware-transcoding
+acceptance result. A supported Intel iGPU NAS with a healthy Container Manager
+is required before declaring this feature ready.

@@ -70,6 +70,7 @@ def manifest():
         "compose": {
             "sdk": "0.20.0",
             "files": ["compose.yaml"],
+            "devices": {"gpu": {"services": ["jellyfin"]}},
             "shares": {
                 "media": {
                     "select": "install",
@@ -89,6 +90,7 @@ def manifest():
                                 "BOOTSTRAP_PASSWORD": {"secret": "bootstrap"},
                             },
                             "files": [
+                                {"target": STATE + "/hwa.sh", "content": (ROOT / "container/hwa.sh").read_text()},
                                 {
                                     "target": STATE + "/start.sh",
                                     "content": (
