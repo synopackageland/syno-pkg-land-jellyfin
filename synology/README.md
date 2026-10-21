@@ -142,7 +142,8 @@ packages. The SDK requests no added capabilities; the nonroot package process
 with no-new-privileges has zero effective, permitted and ambient capabilities.
 This general DSM behavior does not block GPU acceptance.
 
-Local
-configuration tests and a build/inspect result are not a hardware-transcoding
-acceptance result. A supported Intel iGPU NAS with a healthy Container Manager
-is required before declaring this feature ready.
+The development candidate completed real H.264 VAAPI and optional native QSV
+playback transcoding on Intel Celeron J4025, with complete client decoding. The
+no-GPU software path also passed. See [validation scope](docs/validation.md) for
+source commits, CPU measurements and lifecycle boundaries. These observations
+do not certify other GPUs, codecs or released dependency builds.
