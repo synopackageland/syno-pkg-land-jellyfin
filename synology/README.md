@@ -124,7 +124,8 @@ On Intel iGPU models, the package maps only accepted `/dev/dri/renderD*` nodes,
 runs as the fixed package UID and obtains the numeric `videodriver` GID through
 DSM's native resource. It uses neither root nor privileged containers. Before
 starting Jellyfin, its unchanged image's FFmpeg performs a bounded H.264 VAAPI
-encode probe. When successful, the first initialization writes Jellyfin's native
+encode probe (60 seconds, then a five-second forced-termination grace period).
+Probe failures report their exit code and select software. When successful, the first initialization writes Jellyfin's native
 `encoding.xml` fields for VAAPI and the detected render path. Subsequent starts
 preserve encoder choices while hardware remains usable; QSV can be selected in
 Jellyfin's native dashboard after validation on the target device. Automatic QSV,
@@ -136,13 +137,10 @@ again it initializes VAAPI once more. HWA is a package capability, independent o
 DSM sign-in or media-folder permissions. Hardware removal requires reinstalling
 or upgrading to regenerate the SDK's device mappings.
 
-The tested DSM provider adds NET_BIND_SERVICE in its generated admin Compose
-file, even with an explicit empty source capability list. That fails this
-candidate's zero-cap_add boundary, so hardware validation and release remain
-blocked. This wrapper does not patch the native worker or recreate containers
-through a privileged workaround. Native package group authorization was observed;
-real VAAPI playback, its CPU comparison, QSV and GPU stop/start remain unverified.
-The no-GPU software path completed a real H.264 playback transcode with libx264.
+DSM's native provider adds NET_BIND_SERVICE to the bounding set for Compose
+packages. The SDK requests no added capabilities; the nonroot package process
+with no-new-privileges has zero effective, permitted and ambient capabilities.
+This general DSM behavior does not block GPU acceptance.
 
 Local
 configuration tests and a build/inspect result are not a hardware-transcoding

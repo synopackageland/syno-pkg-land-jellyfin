@@ -37,11 +37,22 @@ hwa_write() {
     mv "$hwa_config.pending" "$hwa_config"
 }
 
+hwa_probe() {
+    # Cold shared-library/driver loads can exceed 15s on disk-backed devices.
+    if timeout -k 5 60 /usr/lib/jellyfin-ffmpeg/ffmpeg -hide_banner -loglevel error -init_hw_device "vaapi=va:$1" -filter_hw_device va -f lavfi -i color=s=64x64:r=1 -vf format=nv12,hwupload -frames:v 1 -c:v h264_vaapi -f null - >/dev/null 2>&1; then
+        return 0
+    else
+        hwa_probe_status=$?
+        printf 'VAAPI probe failed (exit %s).\n' "$hwa_probe_status" >&2
+        return "$hwa_probe_status"
+    fi
+}
+
 hwa_setup() {
     hwa_state=$1
     hwa_path=${SYNOPKGLAND_GPU_DEVICE:-}
     if [ "${SYNOPKGLAND_GPU_STATUS:-software}" = available ] && hwa_device "$hwa_path" && [ -c "$hwa_path" ] && [ -r "$hwa_path" ] && [ -w "$hwa_path" ] &&
-        timeout 15 /usr/lib/jellyfin-ffmpeg/ffmpeg -hide_banner -loglevel error -init_hw_device "vaapi=va:$hwa_path" -filter_hw_device va -f lavfi -i color=s=64x64:r=1 -vf format=nv12,hwupload -frames:v 1 -c:v h264_vaapi -f null - >/dev/null 2>&1; then
+        hwa_probe "$hwa_path"; then
         if [ ! -f "$hwa_state/hwa.initialized" ]; then
             hwa_write "$hwa_state" vaapi "$hwa_path" || return 1
             : > "$hwa_state/hwa.initialized"
