@@ -23,7 +23,7 @@
     }
   },
   "compose": {
-    "sdk": "0.23.0",
+    "sdk": "0.24.0",
     "files": [
       "compose.yaml"
     ],
@@ -108,7 +108,7 @@
     }
   },
   "identity_gateway": {
-    "sdk": "0.23.0",
+    "sdk": "0.24.0",
     "mode": "oidc",
     "access": "dsm-users",
     "listen": {
