@@ -61,7 +61,7 @@ def manifest():
         "icon": "assets/icon.png",
         "description": "Organize and stream your movies, TV shows and music",
         "i18n": {"info": {"zh-TW": {"description": "整理與串流播放你的電影、影集和音樂"}}},
-        "maintainer": "synopackageland",
+        "maintainer": "Syno Package Land",
         "os_min_ver": "7.2.1-69057",
         "arches": ["x86_64"],
         "entry": "app-privilege",
@@ -70,7 +70,7 @@ def manifest():
             "sharedFolder": {"mode": "select", "key": "media", "permission": "ro"}
         },
         "compose": {
-            "sdk": "0.24.0",
+            "sdk": "0.26.0",
             "files": ["compose.yaml"],
             "devices": {"gpu": {"services": ["jellyfin"]}},
             "shares": {
@@ -140,7 +140,7 @@ def manifest():
             "network": {"egress": "internet"},
         },
         "identity_gateway": {
-            "sdk": "0.24.0",
+            "sdk": "0.26.0",
             "mode": "oidc",
             "access": "dsm-users",
             "listen": {"https": 29443},
