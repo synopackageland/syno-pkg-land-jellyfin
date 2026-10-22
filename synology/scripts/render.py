@@ -58,6 +58,7 @@ def manifest():
         "version": source["tag"].removeprefix("v"),
         "build": source["build"],
         "displayname": "Jellyfin",
+        "icon": "assets/icon.png",
         "description": "Jellyfin media server with DSM sign-in and an install-selected, read-only media folder.",
         "maintainer": "synopackageland",
         "os_min_ver": "7.2.1-69057",

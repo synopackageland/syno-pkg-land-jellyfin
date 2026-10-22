@@ -13,3 +13,11 @@ Syno Package Land SDK/App: 0.21.0; CLI/templates: 0.21.0; executor: executor/v0.
 Builds use published packages and SDK modules; UI remains at 0.12.5.
 Template notice: LICENSES/TEMPLATE.txt.
 Wrapper integration: Copyright (c) 2026 synopkgland, GPL-3.0-or-later.
+
+## Package icon attribution
+
+Official Jellyfin artwork from jellyfin/jellyfin-ux at `69a2b7b1237732a134dd501ff55b9404cf2d1601`, `branding/web/icon-transparent.png`.
+Source: https://raw.githubusercontent.com/jellyfin/jellyfin-ux/69a2b7b1237732a134dd501ff55b9404cf2d1601/branding/web/icon-transparent.png
+Original SHA-256: `f3a12b9fdf5b5dfcf38d2b1cb2eebfb2c55b33d3db8a5776420feb4aeb230ffc`.
+License: CC-BY-SA-4.0. The original asset is preserved; only size conversion/rasterization is performed for DSM. Upstream names and trademarks remain with their respective owners; this community integration does not claim upstream endorsement.
+See LICENSES/Jellyfin-Logo-CC-BY-SA-4.0.txt for the branding asset license.
