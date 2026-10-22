@@ -142,3 +142,7 @@ playback transcoding on Intel Celeron J4025, with complete client decoding. The
 no-GPU software path also passed. See [validation scope](docs/validation.md) for
 CPU measurements and lifecycle boundaries. The release verification is recorded separately there. These observations
 do not certify other GPUs or codecs.
+
+## Official package icon
+
+The DSM package uses the official project artwork, preserved unchanged and only resized/rasterized to the required icon sizes. See [assets/icon-source.json](assets/icon-source.json) for the source revision and original SHA-256, and [NOTICE](NOTICE) for attribution and the applicable image license. The package ID remains `SynoPkgJellyfin` for upgrade continuity.

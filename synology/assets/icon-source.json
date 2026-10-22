@@ -1,0 +1,11 @@
+{
+  "repository": "jellyfin/jellyfin-ux",
+  "revision": "69a2b7b1237732a134dd501ff55b9404cf2d1601",
+  "path": "branding/web/icon-transparent.png",
+  "url": "https://raw.githubusercontent.com/jellyfin/jellyfin-ux/69a2b7b1237732a134dd501ff55b9404cf2d1601/branding/web/icon-transparent.png",
+  "license": "CC-BY-SA-4.0",
+  "sha256": "f3a12b9fdf5b5dfcf38d2b1cb2eebfb2c55b33d3db8a5776420feb4aeb230ffc",
+  "rendering": "Official original preserved byte for byte; only uniform scaling/rasterization for DSM icon sizes. No crop, recolor, compositing or redraw.",
+  "input": "assets/icon.png",
+  "manifest_icon": "assets/icon.png"
+}

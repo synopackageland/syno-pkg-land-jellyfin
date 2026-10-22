@@ -2,8 +2,9 @@
   "schema": 2,
   "package": "SynoPkgJellyfin",
   "version": "12.2",
-  "build": 3,
+  "build": 4,
   "displayname": "Jellyfin",
+  "icon": "assets/icon.png",
   "description": "Jellyfin media server with DSM sign-in and an install-selected, read-only media folder.",
   "maintainer": "synopackageland",
   "os_min_ver": "7.2.1-69057",
@@ -22,7 +23,7 @@
     }
   },
   "compose": {
-    "sdk": "0.23.0",
+    "sdk": "0.24.0",
     "files": [
       "compose.yaml"
     ],
@@ -107,7 +108,7 @@
     }
   },
   "identity_gateway": {
-    "sdk": "0.23.0",
+    "sdk": "0.24.0",
     "mode": "oidc",
     "access": "dsm-users",
     "listen": {

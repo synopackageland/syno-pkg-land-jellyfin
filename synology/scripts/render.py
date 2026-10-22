@@ -58,6 +58,7 @@ def manifest():
         "version": source["tag"].removeprefix("v"),
         "build": source["build"],
         "displayname": "Jellyfin",
+        "icon": "assets/icon.png",
         "description": "Jellyfin media server with DSM sign-in and an install-selected, read-only media folder.",
         "maintainer": "synopackageland",
         "os_min_ver": "7.2.1-69057",
@@ -68,7 +69,7 @@ def manifest():
             "sharedFolder": {"mode": "select", "key": "media", "permission": "ro"}
         },
         "compose": {
-            "sdk": "0.23.0",
+            "sdk": "0.24.0",
             "files": ["compose.yaml"],
             "devices": {"gpu": {"services": ["jellyfin"]}},
             "shares": {
@@ -138,7 +139,7 @@ def manifest():
             "network": {"egress": "internet"},
         },
         "identity_gateway": {
-            "sdk": "0.23.0",
+            "sdk": "0.24.0",
             "mode": "oidc",
             "access": "dsm-users",
             "listen": {"https": 29443},
