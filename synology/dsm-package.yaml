@@ -5,7 +5,14 @@
   "build": 4,
   "displayname": "Jellyfin",
   "icon": "assets/icon.png",
-  "description": "Jellyfin media server with DSM sign-in and an install-selected, read-only media folder.",
+  "description": "Organize and stream your movies, TV shows and music",
+  "i18n": {
+    "info": {
+      "zh-TW": {
+        "description": "\u6574\u7406\u8207\u4e32\u6d41\u64ad\u653e\u4f60\u7684\u96fb\u5f71\u3001\u5f71\u96c6\u548c\u97f3\u6a02"
+      }
+    }
+  },
   "maintainer": "synopackageland",
   "os_min_ver": "7.2.1-69057",
   "arches": [
