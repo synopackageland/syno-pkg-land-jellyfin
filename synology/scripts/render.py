@@ -143,7 +143,7 @@ def manifest():
             "sdk": "0.26.0",
             "mode": "oidc",
             "access": "dsm-users",
-            "listen": {"https": 29443},
+            "listen": {"https": 33443},
             "oidc": {
                 "issuer_port": 29490,
                 "clients": [

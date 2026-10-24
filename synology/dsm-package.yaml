@@ -2,7 +2,7 @@
   "schema": 2,
   "package": "SynoPkgJellyfin",
   "version": "12.2",
-  "build": 5,
+  "build": 6,
   "displayname": "Jellyfin",
   "icon": "assets/icon.png",
   "description": "Organize and stream your movies, TV shows and music",
@@ -119,7 +119,7 @@
     "mode": "oidc",
     "access": "dsm-users",
     "listen": {
-      "https": 29443
+      "https": 33443
     },
     "oidc": {
       "issuer_port": 29490,
