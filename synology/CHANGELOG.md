@@ -1,5 +1,16 @@
 # Changelog
 
+## 12.2-0006
+
+- Move the HTTPS gateway from port 29443 to 33443 so Jellyfin can coexist with
+  Vaultwarden and ConvertX. After upgrading, change the server URL saved in your
+  mobile App to `https://<nas-host>:33443`. Update browser bookmarks, firewall
+  rules and port forwarding as well. This port change does not add support for
+  native clients through the DSM-only gateway; the existing login limitations
+  still apply.
+- Keep the loopback OIDC issuer (29490), streaming backend (29496) and bootstrap
+  server (29497) on their existing ports.
+
 ## 12.2-0005
 
 - Rebuild 12.2-0005 with published SDK/App/CLI/templates 0.26.0, UI 0.14.4 and Go 1.26.10. Maintainer: Syno Package Land. Official images and application sources are unchanged. Check the selected shared folder permissions before starting; grant the package account the required access in DSM.

@@ -1,5 +1,13 @@
 # Jellyfin for DSM
 
+## HTTPS port change in 12.2-0006
+
+The gateway now uses HTTPS port **33443** instead of 29443, allowing Jellyfin,
+ConvertX and Vaultwarden to coexist. After upgrading, change the server URL
+saved in your mobile App to `https://<nas-host>:33443`, and update browser
+bookmarks, firewall rules and port forwarding. The existing native-client login
+limitations described below still apply.
+
 ## SDK 0.26.0 rebuild
 
 A disposable DSM upgrade from 12.2-0004 starts normally when the package account can read the selected share (HTTP 200). Removing its share access makes prestart fail before the container starts and produces a native permission-remediation message.
@@ -61,7 +69,7 @@ configured server starts on loopback port 29496. Jellyfin briefly replaces its
 startup-status listener at each process launch. The SDK waits for
 `/System/Ping` to return exactly HTTP 200 before admitting the backend; inspect
 reports `host-uid-listener-health`. OIDC issuer port 29490 stays loopback.
-HTTPS 29443 is the SDK entry. Auxiliary discovery is disabled. The explicit host
+HTTPS 33443 is the SDK entry. Auxiliary discovery is disabled. The explicit host
 network is required to reach the SDK loopback issuer; it is unrelated to DLNA.
 
 ## Login and acceptance

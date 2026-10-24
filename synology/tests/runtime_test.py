@@ -4,6 +4,15 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
 class RuntimeTests(unittest.TestCase):
+    def test_dedicated_gateway_port_and_rendered_manifest(self):
+        manifest = self.renderer().manifest()
+        self.assertEqual(manifest["identity_gateway"]["listen"]["https"], 33443)
+        self.assertEqual(manifest["identity_gateway"]["oidc"]["issuer_port"], 29490)
+        self.assertEqual(manifest["compose"]["web"]["port"], 29496)
+        self.assertIn("network 29497", (ROOT / "container/start.sh").read_text())
+        self.assertEqual(manifest["build"], 6)
+        self.assertEqual(json.loads((ROOT / "dsm-package.yaml").read_text()), manifest)
+
     def renderer(self):
         spec = importlib.util.spec_from_file_location(
             "render", ROOT / "scripts/render.py"
