@@ -56,8 +56,8 @@ at NAS startup. The generated JSON documents are valid YAML; edit the renderer
 and container adapter, then render again.
 
 Runtime uses the package UID, all capabilities dropped, no-new-privileges,
-read-only image files, a private directory under a sticky named volume, a 1 GiB
-memory ceiling and one pinned CPU. The SDK creates and injects private OIDC and
+read-only image files, a private directory under a sticky named volume, a 2 GiB
+memory ceiling and a low CPU weight (`cpu_shares: 256`) on any core. The SDK creates and injects private OIDC and
 bootstrap secrets. The initial local bootstrap account has an SDK-generated
 random password retained in the private configuration volume. On regenerated
 SDK client secrets the adapter reconfigures the plugin through its native API;

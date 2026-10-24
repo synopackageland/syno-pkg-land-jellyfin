@@ -91,7 +91,11 @@ omitted. TV/mobile native clients cannot use this DSM-only ingress. Native
 session expiry and DSM account revocation remain separate boundaries. DLNA
 is disabled and needs a separate discovery/multicast design.
 
-Runtime has one pinned CPU and a 1 GiB memory ceiling. Named App data volumes
+Runtime may use any core with a low CPU weight (`cpu_shares: 256`) so DSM and
+other services win under contention, and has a 2 GiB memory ceiling. On a
+12-core Linux host with the pinned image, idle anonymous memory was 119 MiB and
+concurrent software 1080p-to-720p transcodes peaked at 423, 729 and 1034 MiB
+for one, two and three streams; three streams exceed the former 1 GiB ceiling. Named App data volumes
 remain after uninstall, including delete-data requests. Fixture cleanup removes
 only the verified owned volumes/share and retains DSM's package identity and
 the official container engine. There is no installed root purge hook.
