@@ -8,6 +8,12 @@ saved in your mobile App to `https://<nas-host>:33443`, and update browser
 bookmarks, firewall rules and port forwarding. The existing native-client login
 limitations described below still apply.
 
+## SDK 0.28.0 rebuild in 12.2-0006
+
+12.2-0006 is rebuilt with published SDK/App/CLI/templates 0.28.0 (executor/v0.27.0), which provides slow-NAS startup defaults (generous health and readiness timing). It has not been tested on a NAS.
+
+12.2-0006 以已發佈 SDK/App/CLI/templates 0.28.0（executor/v0.27.0）重建，採用 SDK 的慢速 NAS 啟動預設值（較寬鬆的健康檢查與就緒時間）。尚未在 NAS 上測試。
+
 ## SDK 0.26.0 rebuild
 
 A disposable DSM upgrade from 12.2-0004 starts normally when the package account can read the selected share (HTTP 200). Removing its share access makes prestart fail before the container starts and produces a native permission-remediation message.
@@ -36,7 +42,7 @@ commits. Do not describe its HEAD as the source tree of the pinned release image
 ## Build
 
 Use Node 24 and Go 1.26.9 on a Linux build host with access to the released SDK
-module. CLI/templates/SDK/App are pinned to 0.21.0, executor to executor/v0.20.0
+module. CLI/templates/SDK/App are pinned to 0.28.0, executor to executor/v0.27.0
 and UI to 0.12.5. Install the locked published dependencies and run:
 
 ```sh
