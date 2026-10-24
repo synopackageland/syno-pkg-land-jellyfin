@@ -1,13 +1,13 @@
 {
   "package": "SynoPkgJellyfin",
-  "version": "12.2-0005",
+  "version": "12.2-0006",
   "toolchain": {
-    "cli": "0.26.0",
-    "templates": "0.26.0",
-    "sdk": "0.26.0",
-    "app": "0.26.0",
+    "cli": "0.28.0",
+    "templates": "0.28.0",
+    "sdk": "0.28.0",
+    "app": "0.28.0",
     "ui": "0.14.4",
-    "executorTag": "executor/v0.24.0",
+    "executorTag": "executor/v0.27.0",
     "goToolchain": "go1.26.10"
   },
   "check": {
@@ -20,17 +20,17 @@
     "ok": true,
     "findings": []
   },
-  "nas_tested": true,
-  "manifest_sha256": "a294734eea5373ffce9252e49cdf8ea2217b7d76806425af669fa0b1409b0b1b",
+  "nas_tested": false,
+  "manifest_sha256": "7ddb8951cb5e3b42360f88537af19d3b7214e7afad72656b66291a445b75c4a4",
   "lock_sha256": {
-    "package-lock.json": "3b75df3a8f89950e7d65aa57bf2daf2cdf8ae99ebd1c53e48aa83bfc7a31bf18"
+    "package-lock.json": "481615b03fde4d8d04db15d8f0a5aca7f47afe18caca23b3fd88711f4ee0b583"
   },
   "outputs": [
     {
-      "file": "SynoPkgJellyfin-12.2-0005-x86_64.spk",
-      "sha256": "e777a3ec02642d5de1bed359311c677ce5bf2fd711ad7ae62163f746de97e432",
-      "size": 21075456,
-      "md5": "a664c33e266e3a29ccbcd1cf4846070f"
+      "file": "SynoPkgJellyfin-12.2-0006-x86_64.spk",
+      "sha256": "529a1cf8aaf1f35e02dd58bf55859102d887a48a90002dd8c31aec6ef2f04f54",
+      "size": 21089792,
+      "md5": "55402fd46f63b0a5932c8b10afbe6f26"
     }
   ],
   "go_binaries": [
@@ -38,57 +38,43 @@
       "arch": "x86_64",
       "path": "compose/storage-init",
       "version": "go1.26.10",
-      "sha256": "56317f79c9785e9a8cd1e0679df6f2514ce240f9ac1a85307f9b5e13dcca0acf",
+      "sha256": "38cc4d48cd89a48c3f028e5143e0fd9e2635248e7e4a0aa9f457c49d4ea2adbd",
       "upstream_unmodified": false
     },
     {
       "arch": "x86_64",
       "path": "compose/control",
       "version": "go1.26.10",
-      "sha256": "055076054d8905eb3bf3ff300067882c2a8c619cb112855ff5f9b73bcf920e7a",
+      "sha256": "5c53368c7783b6f45b89981ffb2e54778f149e0e3934e3558db6810a31d173b7",
       "upstream_unmodified": false
     },
     {
       "arch": "x86_64",
       "path": "daemon/control",
       "version": "go1.26.10",
-      "sha256": "ac005f8e52938072850f824c61c57bc82ca5643eae4a2b01641ff082bc8df517",
+      "sha256": "4bed54373273fd30d2aaf3a643960c35a45c577283ed133fa97fc842c5e1dc9e",
       "upstream_unmodified": false
     },
     {
       "arch": "x86_64",
       "path": "daemon/payload/_sso/gateway",
       "version": "go1.26.10",
-      "sha256": "1cac58156bf5df88e0f7f81ea093d13c91bf1b94f2e36167aa8b00ae2191201f",
+      "sha256": "0d82d39506cfce547900beab1034802b0175391d200716b41b19b78dc93de7b5",
       "upstream_unmodified": false
     },
     {
       "arch": "x86_64",
       "path": "ui/sso/open.cgi",
       "version": "go1.26.10",
-      "sha256": "1cac58156bf5df88e0f7f81ea093d13c91bf1b94f2e36167aa8b00ae2191201f",
+      "sha256": "0d82d39506cfce547900beab1034802b0175391d200716b41b19b78dc93de7b5",
       "upstream_unmodified": false
     },
     {
       "arch": "x86_64",
       "path": "ui/sso/authorize.cgi",
       "version": "go1.26.10",
-      "sha256": "1cac58156bf5df88e0f7f81ea093d13c91bf1b94f2e36167aa8b00ae2191201f",
+      "sha256": "0d82d39506cfce547900beab1034802b0175391d200716b41b19b78dc93de7b5",
       "upstream_unmodified": false
     }
-  ],
-  "nas_validation": {
-    "upgrade_from": "12.2-0004",
-    "upgrade_to": "12.2-0005",
-    "share_access_allowed": {
-      "start_exit_code": 0,
-      "health_http_status": 200
-    },
-    "share_access_denied": {
-      "prestart_exit_code": 1,
-      "container_started": false,
-      "native_remediation_message": true
-    },
-    "scope": "one disposable DSM install-selected read-only share fixture"
-  }
+  ]
 }
