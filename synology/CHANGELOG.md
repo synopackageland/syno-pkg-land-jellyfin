@@ -10,6 +10,8 @@
   still apply.
 - Keep the loopback OIDC issuer (29490), streaming backend (29496) and bootstrap
   server (29497) on their existing ports.
+- Rebuilt with published SDK/App/CLI/templates 0.28.0 (executor/v0.27.0), which brings slow-NAS startup defaults (generous health and readiness timing). Not tested on a NAS.
+- 以已發佈 SDK/App/CLI/templates 0.28.0（executor/v0.27.0）重建，採用 SDK 的慢速 NAS 啟動預設值（較寬鬆的健康檢查與就緒時間）。尚未在 NAS 上測試。
 
 ## 12.2-0005
 

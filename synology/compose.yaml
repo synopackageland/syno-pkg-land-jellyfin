@@ -51,18 +51,14 @@
       "volumes": [
         "data:/var/tmp"
       ],
-      "cpuset": "0-0",
-      "mem_limit": "1g",
+      "cpu_shares": 256,
+      "mem_limit": "2g",
       "restart": "unless-stopped",
       "healthcheck": {
         "test": [
           "CMD-SHELL",
           "test \"$(curl -fsS http://127.0.0.1:29496/health)\" = Healthy"
-        ],
-        "interval": "30s",
-        "timeout": "3s",
-        "retries": 3,
-        "start_period": "600s"
+        ]
       },
       "stop_grace_period": "30s"
     }

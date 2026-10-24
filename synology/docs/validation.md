@@ -11,6 +11,19 @@ streaming backend (29496) and bootstrap server (29497) are unchanged.
 No NAS installation, upgrade or coexistence test has been run for this build.
 Earlier device results below apply to their named builds only.
 
+## 12.2-0006 SDK/CLI 0.28.0 pin
+
+Pins moved to published CLI/templates/SDK/App `0.28.0` with `executor/v0.27.0`
+(Go 1.26.10, UI 0.14.4 unchanged). `npm ci --ignore-scripts` installed the
+locked packages; no source overrides were set. Ran locally on macOS:
+`npm test` (runtime, hardware-adapter and version tests pass),
+`synopkgland check --json` (ok), `synopkgland build --arch x86_64 --json`
+(produced `SynoPkgJellyfin-12.2-0006-x86_64.spk`) and `synopkgland inspect`
+(ok, no findings). `tests/retention_test.py` needs a storage-init binary and
+Docker and was not run. The SPK is unsigned. No NAS installation, upgrade or
+slow-start test has been run for this build, so slow-NAS behavior is
+unverified on a device.
+
 ## Release inputs
 
 Jellyfin `12.2-0002` uses published CLI/templates/SDK/App `0.21.0`,
@@ -91,7 +104,11 @@ omitted. TV/mobile native clients cannot use this DSM-only ingress. Native
 session expiry and DSM account revocation remain separate boundaries. DLNA
 is disabled and needs a separate discovery/multicast design.
 
-Runtime has one pinned CPU and a 1 GiB memory ceiling. Named App data volumes
+Runtime may use any core with a low CPU weight (`cpu_shares: 256`) so DSM and
+other services win under contention, and has a 2 GiB memory ceiling. On a
+12-core Linux host with the pinned image, idle anonymous memory was 119 MiB and
+concurrent software 1080p-to-720p transcodes peaked at 423, 729 and 1034 MiB
+for one, two and three streams; three streams exceed the former 1 GiB ceiling. Named App data volumes
 remain after uninstall, including delete-data requests. Fixture cleanup removes
 only the verified owned volumes/share and retains DSM's package identity and
 the official container engine. There is no installed root purge hook.

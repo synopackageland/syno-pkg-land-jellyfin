@@ -46,31 +46,31 @@ if [ ! -f "$state/bootstrap.complete" ] || [ "$(cat "$state/oidc.fingerprint" 2>
     network 29497
     /jellyfin/jellyfin &
     server=$!
-    until [ "$(curl -fsS --max-time 2 http://127.0.0.1:29497/health 2>/dev/null || true)" = Healthy ]; do
+    until [ "$(curl -fsS --max-time 30 http://127.0.0.1:29497/health 2>/dev/null || true)" = Healthy ]; do
         kill -0 "$server" 2>/dev/null || { echo 'Bootstrap server failed' >&2; exit 1; }
         [ "$(date +%s)" -lt "$deadline" ] || { stop; echo 'Bootstrap deadline exceeded' >&2; exit 1; }
         sleep 1
     done
     api=http://127.0.0.1:29497
-    info=$(curl -fsS --max-time 10 "$api/System/Info/Public")
+    info=$(curl -fsS --max-time 30 "$api/System/Info/Public")
     if ! printf '%s' "$info" | grep -iq '"StartupWizardCompleted"[[:space:]]*:[[:space:]]*true'; then
-        curl -fsS --max-time 10 "$api/Startup/User" >/dev/null
+        curl -fsS --max-time 30 "$api/Startup/User" >/dev/null
         printf '{"Name":"package-bootstrap","Password":"%s"}' "$BOOTSTRAP_PASSWORD" > "$state/auth.json"
-        curl -fsS --max-time 10 -H 'Content-Type: application/json' -X POST --data-binary @"$state/auth.json" "$api/Startup/User" >/dev/null
-        curl -fsS --max-time 10 -X POST "$api/Startup/Complete" >/dev/null
+        curl -fsS --max-time 30 -H 'Content-Type: application/json' -X POST --data-binary @"$state/auth.json" "$api/Startup/User" >/dev/null
+        curl -fsS --max-time 30 -X POST "$api/Startup/Complete" >/dev/null
     fi
     printf '{"Username":"package-bootstrap","Pw":"%s"}' "$BOOTSTRAP_PASSWORD" > "$state/auth.json"
-    response=$(curl -fsS --max-time 10 -H 'Content-Type: application/json' -H 'Authorization: MediaBrowser Client="Package Setup", Device="Package", DeviceId="package-bootstrap", Version="1"' --data-binary @"$state/auth.json" "$api/Users/AuthenticateByName")
+    response=$(curl -fsS --max-time 30 -H 'Content-Type: application/json' -H 'Authorization: MediaBrowser Client="Package Setup", Device="Package", DeviceId="package-bootstrap", Version="1"' --data-binary @"$state/auth.json" "$api/Users/AuthenticateByName")
     token=$(printf '%s' "$response" | sed -n 's/.*"AccessToken"[[:space:]]*:[[:space:]]*"\([0-9a-fA-F]*\)".*/\1/p')
     [ -n "$token" ] || { stop; echo 'Bootstrap authentication failed' >&2; exit 1; }
     printf 'header = "Authorization: MediaBrowser Token=%s"\n' "$token" > "$state/curl-auth.conf"
     sed "s/__CLIENT_SECRET__/$OIDC_SECRET/g" "$state/provider.json" > "$state/provider-live.json"
-    curl -fsS --max-time 10 -K "$state/curl-auth.conf" -H 'Content-Type: application/json' --data-binary @"$state/provider-live.json" "$api/sso/OID/Add/dsm" >/dev/null
+    curl -fsS --max-time 30 -K "$state/curl-auth.conf" -H 'Content-Type: application/json' --data-binary @"$state/provider-live.json" "$api/sso/OID/Add/dsm" >/dev/null
     # The supported branding API provides a one-click fallback after native hash-route logout.
-    curl -fsS --max-time 10 -K "$state/curl-auth.conf" -H 'Content-Type: application/json' --data-binary @"$state/branding.json" "$api/System/Configuration/Branding" >/dev/null
-    curl -fsS --max-time 10 -K "$state/curl-auth.conf" "$api/Library/VirtualFolders" > "$state/library-list.json"
+    curl -fsS --max-time 30 -K "$state/curl-auth.conf" -H 'Content-Type: application/json' --data-binary @"$state/branding.json" "$api/System/Configuration/Branding" >/dev/null
+    curl -fsS --max-time 30 -K "$state/curl-auth.conf" "$api/Library/VirtualFolders" > "$state/library-list.json"
     if ! grep -q '"Name"[[:space:]]*:[[:space:]]*"Media"' "$state/library-list.json"; then
-        curl -fsS --max-time 10 -K "$state/curl-auth.conf" -H 'Content-Type: application/json' --data-binary @"$state/library.json" "$api/Library/VirtualFolders?name=Media&collectionType=movies&refreshLibrary=false" >/dev/null
+        curl -fsS --max-time 30 -K "$state/curl-auth.conf" -H 'Content-Type: application/json' --data-binary @"$state/library.json" "$api/Library/VirtualFolders?name=Media&collectionType=movies&refreshLibrary=false" >/dev/null
     fi
     printf '%s' "$oidc_fingerprint" > "$state/oidc.fingerprint"
     kill "$server"; wait "$server" || true; server=''
@@ -84,13 +84,13 @@ if [ -f "$state/bootstrap.complete" ]; then
 fi
 /jellyfin/jellyfin &
 server=$!
-until [ "$(curl -fsS --max-time 2 http://127.0.0.1:29496/health 2>/dev/null || true)" = Healthy ]; do
+until [ "$(curl -fsS --max-time 30 http://127.0.0.1:29496/health 2>/dev/null || true)" = Healthy ]; do
     kill -0 "$server" 2>/dev/null || { cleanup_secrets; exit 1; }
     [ "$(date +%s)" -lt "$deadline" ] || { stop; exit 1; }
     sleep 1
 done
 # A refresh is asynchronous: request it from the final process, which remains alive.
-curl -fsS --max-time 10 -K "$state/curl-auth.conf" -X POST http://127.0.0.1:29496/Library/Refresh >/dev/null
+curl -fsS --max-time 30 -K "$state/curl-auth.conf" -X POST http://127.0.0.1:29496/Library/Refresh >/dev/null
 cleanup_secrets
 : > "$state/bootstrap.complete"
 wait "$server"

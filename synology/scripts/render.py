@@ -70,7 +70,7 @@ def manifest():
             "sharedFolder": {"mode": "select", "key": "media", "permission": "ro"}
         },
         "compose": {
-            "sdk": "0.26.0",
+            "sdk": "0.28.0",
             "files": ["compose.yaml"],
             "devices": {"gpu": {"services": ["jellyfin"]}},
             "shares": {
@@ -79,7 +79,6 @@ def manifest():
                     "mounts": [{"service": "jellyfin", "target": "/media"}],
                 }
             },
-            "startup_timeout_seconds": 600,
             "services": {
                 "jellyfin": {
                     "network": "host",
@@ -140,7 +139,7 @@ def manifest():
             "network": {"egress": "internet"},
         },
         "identity_gateway": {
-            "sdk": "0.26.0",
+            "sdk": "0.28.0",
             "mode": "oidc",
             "access": "dsm-users",
             "listen": {"https": 33443},
@@ -194,18 +193,16 @@ def render():
                 "read_only": True,
                 "tmpfs": ["/tmp"],
                 "volumes": ["data:/var/tmp"],
-                "cpuset": "0-0",
-                "mem_limit": "1g",
+                # Use any core but yield to DSM and other services under contention.
+                "cpu_shares": 256,
+                # Software transcoding measured ~305 MiB anon per 1080p stream.
+                "mem_limit": "2g",
                 "restart": "unless-stopped",
                 "healthcheck": {
                     "test": [
                         "CMD-SHELL",
                         'test "$(curl -fsS http://127.0.0.1:29496/health)" = Healthy',
                     ],
-                    "interval": "30s",
-                    "timeout": "3s",
-                    "retries": 3,
-                    "start_period": "600s",
                 },
                 "stop_grace_period": "30s",
             }
@@ -213,7 +210,7 @@ def render():
         "volumes": {"data": {}},
     }
     (ROOT / "compose.yaml").write_text(json.dumps(compose, indent=2) + "\n")
-    (ROOT / "dsm-package.yaml").write_text(json.dumps(manifest(), indent=2) + "\n")
+    (ROOT / "dsm-package.yaml").write_text(json.dumps(manifest(), indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":
