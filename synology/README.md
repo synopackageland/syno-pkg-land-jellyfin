@@ -1,32 +1,14 @@
 # Jellyfin for DSM
 
-## HTTPS port change in 12.2-0006
+## 12.2-0008
 
-The gateway now uses HTTPS port **33443** instead of 29443, allowing Jellyfin,
-ConvertX and Vaultwarden to coexist. After upgrading, change the server URL
-saved in your mobile App to `https://<nas-host>:33443`, and update browser
-bookmarks, firewall rules and port forwarding. The existing native-client login
-limitations described below still apply.
+Improve opening the App from the DSM menu and external access settings. Built with SDK/App 0.30.2 and CLI/templates 0.30.0. No NAS testing was performed for this toolchain rebuild.
 
-## SDK 0.28.0 rebuild in 12.2-0006
-
-12.2-0006 is rebuilt with published SDK/App/CLI/templates 0.28.0 (executor/v0.27.0), which provides slow-NAS startup defaults (generous health and readiness timing). It has not been tested on a NAS.
-
-12.2-0006 以已發佈 SDK/App/CLI/templates 0.28.0（executor/v0.27.0）重建，採用 SDK 的慢速 NAS 啟動預設值（較寬鬆的健康檢查與就緒時間）。尚未在 NAS 上測試。
-
-## SDK 0.26.0 rebuild
-
-A disposable DSM upgrade from 12.2-0004 starts normally when the package account can read the selected share (HTTP 200). Removing its share access makes prestart fail before the container starts and produces a native permission-remediation message.
-
-以隔離 DSM fixture 從 12.2-0004 升級：套件帳號有讀取權限時正常啟動（HTTP 200）；移除該權限後，prestart 在容器啟動前拒絕，並提供原生權限補救訊息。
-
-Rebuild 12.2-0005 with published SDK/App/CLI/templates 0.26.0, UI 0.14.4 and Go 1.26.10. Maintainer: Syno Package Land. Official images and application sources are unchanged. Check the selected shared folder permissions before starting; grant the package account the required access in DSM.
-
-12.2-0005 使用已發佈 SDK/App/CLI/templates 0.26.0、UI 0.14.4 與 Go 1.26.10 重建；維護者顯示為 Syno Package Land。 官方映像與上游程式維持原樣。 啟動前檢查所選共用資料夾權限；請在 DSM 授予套件帳號所需存取權限。
+改善從 DSM 選單開啟 App 與外網存取設定；使用 SDK/App 0.30.2 和 CLI/templates 0.30.0 重建
 
 This wrapper uses the unmodified official Jellyfin 12.2 image, the unmodified
 SSO Authentication 4.0.0.4 plugin, and the embedded SDK OIDC provider.
-The SPK is `SynoPkgJellyfin` / `12.2-0002` / x86_64.
+The SPK is `SynoPkgJellyfin` / `12.2-0008` / x86_64.
 
 The native install wizard selects an existing Shared Folder for `/media`, mounted
 read-only. Selection does not grant access: in DSM Shared Folder permissions,
@@ -41,9 +23,9 @@ commits. Do not describe its HEAD as the source tree of the pinned release image
 
 ## Build
 
-Use Node 24 and Go 1.26.9 on a Linux build host with access to the released SDK
-module. CLI/templates/SDK/App are pinned to 0.28.0, executor to executor/v0.27.0
-and UI to 0.12.5. Install the locked published dependencies and run:
+Use Node 24 and Go 1.26.10 on a Linux build host with access to the released SDK
+module. SDK/App are pinned to 0.30.2 and CLI/templates to 0.30.0, executor to executor/v0.27.0
+and UI to 0.14.4. Install the locked published dependencies and run:
 
 ```sh
 cd synology
@@ -52,7 +34,7 @@ python3 scripts/render.py
 npm test
 npx --no-install synopkgland check --json
 npx --no-install synopkgland build --arch x86_64 --json
-npx --no-install synopkgland inspect dist/SynoPkgJellyfin-12.2-0002-x86_64.spk --json
+npx --no-install synopkgland inspect dist/SynoPkgJellyfin-12.2-0008-x86_64.spk --json
 ```
 
 `render.py` verifies the original plugin ZIP's pinned SHA-256 before embedding
