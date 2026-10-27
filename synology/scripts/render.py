@@ -61,7 +61,12 @@ def manifest():
         "icon": "assets/icon.png",
         "description": "Organize and stream your movies, TV shows and music",
         "i18n": {"info": {"zh-TW": {"description": "整理與串流播放你的電影、影集和音樂"}}},
-        "maintainer": "Syno Package Land",
+        "maintainer": "Jellyfin",
+        "metadata": {
+            "maintainer_url": "https://github.com/jellyfin/jellyfin",
+            "distributor": "Syno Package Land",
+            "distributor_url": "https://synopkgland.com/",
+        },
         "os_min_ver": "7.2.1-69057",
         "arches": ["x86_64"],
         "entry": "app-privilege",

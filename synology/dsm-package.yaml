@@ -13,7 +13,7 @@
       }
     }
   },
-  "maintainer": "Syno Package Land",
+  "maintainer": "Jellyfin",
   "os_min_ver": "7.2.1-69057",
   "arches": [
     "x86_64"
@@ -135,5 +135,10 @@
   },
   "ui": {
     "launch": "new-page"
+  },
+  "metadata": {
+    "maintainer_url": "https://github.com/jellyfin/jellyfin",
+    "distributor": "Syno Package Land",
+    "distributor_url": "https://synopkgland.com/"
   }
 }
