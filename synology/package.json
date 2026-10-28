@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "render": "python3 scripts/render.py",
-    "test": "python3 tests/runtime_test.py && python3 tests/hwa_test.py && node --test tests/version.test.mjs",
+    "test": "python3 tests/runtime_test.py && python3 tests/hwa_test.py && node --test tests/version.test.mjs && npm run test:entry",
     "check": "synopkgland check --json",
     "build": "synopkgland build --arch x86_64 --json",
-    "e2e": "e2e run --config e2e.config.ts"
+    "e2e": "e2e run --config e2e.config.ts",
+    "test:entry": "cd tests/entry && go test -count=1 ./..."
   },
   "devDependencies": {
     "@ai-sdk/openai": "4.0.91",

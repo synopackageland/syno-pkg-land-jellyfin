@@ -147,6 +147,7 @@ def manifest():
             "sdk": "0.32.0",
             "mode": "oidc",
             "access": "dsm-users",
+            "upstream_auth_paths": ['/System', '/Users', '/QuickConnect', '/Items', '/UserItems', '/UserViews', '/Sessions', '/Videos', '/Audio', '/socket', '/Auth', '/Playback'],
             "listen": {"https": 33443},
             "oidc": {
                 "issuer_port": 29490,

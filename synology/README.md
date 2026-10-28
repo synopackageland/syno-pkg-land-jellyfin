@@ -1,22 +1,48 @@
 # Jellyfin for DSM
 
+## Current package
 
-## 12.2-0011: SDK entry-gate migration
+Version **12.2-0012** uses published SDK/App/templates **0.32.0**,
+CLI **0.34.0** and executor **v0.32.0**. Protected executors require
+administrator approval after upgrading. Device and mobile-client acceptance
+are separate from the offline package gates.
 
-Built with SDK/App/templates 0.32.0, CLI 0.34.0 and executor v0.32.0.
-Every request retains the DSM entry gate. No upstream-authenticated path exceptions are enabled in this build.
-Protected executor payloads changed: administrator approval is required again after upgrading.
-No NAS installation or device acceptance was performed for this rebuild.
+## Mobile and native clients
 
-## 12.2-0008
+`identity_gateway.upstream_auth_paths` is exactly:
 
-Improve opening the App from the DSM menu and external access settings. Built with SDK/App 0.30.2 and CLI/templates 0.30.0. No NAS testing was performed for this toolchain rebuild.
+```text
+/System
+/Users
+/QuickConnect
+/Items
+/UserItems
+/UserViews
+/Sessions
+/Videos
+/Audio
+/socket
+/Auth
+/Playback
+```
 
-改善從 DSM 選單開啟 App 與外網存取設定；使用 SDK/App 0.30.2 和 CLI/templates 0.30.0 重建
+These fixed prefixes are case-sensitive and match complete path segments.
+They bypass DSM admission and keep upstream authentication and authorization.
+All other paths, including browser entry, retain the existing DSM gate.
+
+The configured prefixes cover core discovery, native authentication, Quick
+Connect, media listing, playback and events. Clients use the gateway HTTPS
+origin and upstream Jellyfin credentials, Quick Connect or existing API tokens;
+Jellyfin owns authorization and token revocation on those requests.
+`/web` and `/sso` remain DSM-gated. These prefixes are a core subset, not a
+complete list for every official client: music categories, TV and image
+endpoints can require other paths. No additional prefixes are implied.
+Native login, Quick Connect approval and complete playback flows remain
+unverified on a deployed package. DSM logout does not revoke upstream tokens.
 
 This wrapper uses the unmodified official Jellyfin 12.2 image, the unmodified
 SSO Authentication 4.0.0.4 plugin, and the embedded SDK OIDC provider.
-The SPK is `SynoPkgJellyfin` / `12.2-0008` / x86_64.
+The SPK is `SynoPkgJellyfin` / `12.2-0012` / x86_64.
 
 The native install wizard selects an existing Shared Folder for `/media`, mounted
 read-only. Selection does not grant access: in DSM Shared Folder permissions,
@@ -32,7 +58,7 @@ commits. Do not describe its HEAD as the source tree of the pinned release image
 ## Build
 
 Use Node 24 and Go 1.26.10 on a Linux build host with access to the released SDK
-module. SDK/App are pinned to 0.30.2 and CLI/templates to 0.30.0, executor to executor/v0.27.0
+module. SDK/App/templates are pinned to 0.32.0 and CLI to 0.34.0, executor to executor/v0.32.0
 and UI to 0.14.4. Install the locked published dependencies and run:
 
 ```sh
@@ -42,7 +68,7 @@ python3 scripts/render.py
 npm test
 npx --no-install synopkgland check --json
 npx --no-install synopkgland build --arch x86_64 --json
-npx --no-install synopkgland inspect dist/SynoPkgJellyfin-12.2-0008-x86_64.spk --json
+npx --no-install synopkgland inspect dist/SynoPkgJellyfin-12.2-0012-x86_64.spk --json
 ```
 
 `render.py` verifies the original plugin ZIP's pinned SHA-256 before embedding
@@ -79,10 +105,11 @@ Jellyfin's supported login branding offers **Sign in with DSM** as the one-click
 entry. The SDK automatic browser bridge is omitted: the plugin initializes Web
 credentials through a hidden iframe, and the bridge's document redirects cause
 a repeated login flow. No upstream script is patched. Logout returns to the
-native login screen, where the same DSM button is available. Native app/TV login is not supported by this DSM-only ingress. Such clients
-use native Jellyfin authentication, but a native account alone does not pass the
-DSM gateway. A separately reviewed passthrough or Quick Connect design is needed. App session/token expiry and DSM
-account deletion/revocation are separate acceptance boundaries.
+native login screen, where the same DSM button is available. Native app/TV
+requests use only the declared upstream-authenticated prefixes; the browser
+routes still require DSM admission. Jellyfin owns native authentication and
+Quick Connect approval. App session/token expiry and DSM account
+deletion/revocation are separate acceptance boundaries.
 
 The upstream e2e suite uses the CLI's shared DSM login/profile helpers. Supply
 private account JSON files, a private profile directory, a reachable DSM URL,

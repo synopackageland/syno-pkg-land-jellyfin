@@ -1,14 +1,11 @@
 # Release notes
 
+## 12.2-0012
 
-## 12.2-0011: SDK entry-gate migration
-
-Built with SDK/App/templates 0.32.0, CLI 0.34.0 and executor v0.32.0.
-Every request retains the DSM entry gate. No upstream-authenticated path exceptions are enabled in this build.
-Protected executor payloads changed: administrator approval is required again after upgrading.
-No NAS installation or device acceptance was performed for this rebuild.
-
-## 12.2-0010 — Redesigned DSM menu launch page
-
-- The page shown when an App can't be opened from the DSM menu is redesigned and now explains when the App's port isn't reachable from outside
-- 重新設計從 DSM 選單無法開啟 App 時顯示的頁面，並說明 App 的連接埠無法從外部連線的情況
+Built with published SDK/App/templates 0.32.0, CLI 0.34.0 and executor v0.32.0.
+The fixed client prefixes in the README use upstream authentication; browser
+entry and every unlisted route retain the existing DSM gate. Entry and login
+policy are unchanged. Protected executors require administrator approval.
+Mobile/native first-login and deployed client acceptance remain unverified.
+See [mobile and native clients](../README.md#mobile-and-native-clients) for the
+exact prefix list, upstream credentials, revocation and client limitations.

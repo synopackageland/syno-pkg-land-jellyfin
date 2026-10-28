@@ -2,7 +2,7 @@
   "schema": 2,
   "package": "SynoPkgJellyfin",
   "version": "12.2",
-  "build": 11,
+  "build": 12,
   "displayname": "Jellyfin",
   "icon": "assets/icon.png",
   "description": "Organize and stream your movies, TV shows and music",
@@ -136,7 +136,21 @@
           "pkce": true
         }
       ]
-    }
+    },
+    "upstream_auth_paths": [
+      "/System",
+      "/Users",
+      "/QuickConnect",
+      "/Items",
+      "/UserItems",
+      "/UserViews",
+      "/Sessions",
+      "/Videos",
+      "/Audio",
+      "/socket",
+      "/Auth",
+      "/Playback"
+    ]
   },
   "ui": {
     "launch": "new-page"
