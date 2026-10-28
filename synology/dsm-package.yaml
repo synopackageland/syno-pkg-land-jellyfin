@@ -2,7 +2,7 @@
   "schema": 2,
   "package": "SynoPkgJellyfin",
   "version": "12.2",
-  "build": 10,
+  "build": 11,
   "displayname": "Jellyfin",
   "icon": "assets/icon.png",
   "description": "Organize and stream your movies, TV shows and music",
@@ -14,6 +14,11 @@
     }
   },
   "maintainer": "Jellyfin",
+  "metadata": {
+    "maintainer_url": "https://github.com/jellyfin/jellyfin",
+    "distributor": "Syno Package Land",
+    "distributor_url": "https://synopkgland.com/"
+  },
   "os_min_ver": "7.2.1-69057",
   "arches": [
     "x86_64"
@@ -30,7 +35,7 @@
     }
   },
   "compose": {
-    "sdk": "0.31.2",
+    "sdk": "0.32.0",
     "files": [
       "compose.yaml"
     ],
@@ -114,7 +119,7 @@
     }
   },
   "identity_gateway": {
-    "sdk": "0.31.2",
+    "sdk": "0.32.0",
     "mode": "oidc",
     "access": "dsm-users",
     "listen": {
@@ -135,10 +140,5 @@
   },
   "ui": {
     "launch": "new-page"
-  },
-  "metadata": {
-    "maintainer_url": "https://github.com/jellyfin/jellyfin",
-    "distributor": "Syno Package Land",
-    "distributor_url": "https://synopkgland.com/"
   }
 }
