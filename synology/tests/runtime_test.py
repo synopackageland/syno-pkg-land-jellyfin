@@ -10,7 +10,7 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(manifest["identity_gateway"]["oidc"]["issuer_port"], 29490)
         self.assertEqual(manifest["compose"]["web"]["port"], 29496)
         self.assertIn("network 29497", (ROOT / "container/start.sh").read_text())
-        self.assertEqual(manifest["build"], 12)
+        self.assertEqual(manifest["build"], 1)
         self.assertEqual(json.loads((ROOT / "dsm-package.yaml").read_text()), manifest)
 
     def renderer(self):
@@ -32,7 +32,7 @@ class RuntimeTests(unittest.TestCase):
     def test_native_identity_and_readonly_media(self):
         m = self.renderer()
         manifest = m.manifest()
-        self.assertEqual(manifest["version"], "12.2")
+        self.assertEqual(manifest["version"], "12.4")
         self.assertEqual(
             manifest["build"],
             json.loads((ROOT / "upstream-source.json").read_text())["build"],
