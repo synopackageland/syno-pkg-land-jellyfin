@@ -28,7 +28,7 @@ def plugin_files(file):
 
 def provider(secret):
     return {
-        "OidEndpoint": "http://127.0.0.1:29490",
+        "OidEndpoint": "http://127.0.0.1:__OIDC_ISSUER_PORT__",
         "OidClientId": "jellyfin",
         "OidSecret": secret,
         "Enabled": True,
@@ -72,10 +72,11 @@ def manifest():
         "entry": "app-privilege",
         "capabilities": {"composeMounts": True},
         "install": {
-            "sharedFolder": {"mode": "select", "key": "media", "permission": "ro"}
+            "ports": True,
+            "sharedFolder": {"mode": "dedicated", "key": "media", "name": "Jellyfin", "permission": "ro"}
         },
         "compose": {
-            "sdk": "0.32.0",
+            "sdk": "0.38.2",
             "files": ["compose.yaml"],
             "devices": {"gpu": {"services": ["jellyfin"]}},
             "shares": {
@@ -94,6 +95,7 @@ def manifest():
                             "environment": {
                                 "OIDC_SECRET": {"oidc_client": "jellyfin"},
                                 "BOOTSTRAP_PASSWORD": {"secret": "bootstrap"},
+                                "OIDC_ISSUER_PORT": {"port": "oidc_issuer"},
                             },
                             "files": [
                                 {"target": STATE + "/hwa.sh", "content": (ROOT / "container/hwa.sh").read_text()},
@@ -144,7 +146,7 @@ def manifest():
             "network": {"egress": "internet"},
         },
         "identity_gateway": {
-            "sdk": "0.32.0",
+            "sdk": "0.38.2",
             "mode": "oidc",
             "access": "dsm-users",
             "upstream_auth_paths": ['/System', '/Users', '/QuickConnect', '/Items', '/UserItems', '/UserViews', '/Sessions', '/Videos', '/Audio', '/socket', '/Auth', '/Playback'],

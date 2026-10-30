@@ -9,13 +9,14 @@
     "check": "synopkgland check --json",
     "build": "synopkgland build --arch x86_64 --json",
     "e2e": "e2e run --config e2e.config.ts",
-    "test:entry": "cd tests/entry && go test -count=1 ./..."
+    "test:entry": "cd tests/entry && go test -count=1 ./...",
+    "e2e:smoke": "e2e run --config e2e.config.ts tests/e2e/smoke.e2e.ts"
   },
   "devDependencies": {
     "@ai-sdk/openai": "4.0.91",
     "@e2e-dev/web": "0.14.0",
-    "@synopackageland/cli": "0.34.0",
-    "@synopackageland/templates": "0.32.0",
+    "@synopackageland/cli": "0.41.6",
+    "@synopackageland/templates": "0.35.5",
     "ai": "7.0.137",
     "e2e": "0.19.0",
     "playwright": "1.63.0"

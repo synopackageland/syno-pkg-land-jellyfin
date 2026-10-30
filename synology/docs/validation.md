@@ -1,5 +1,55 @@
 # Validation scope
 
+## 12.4-0002 SDK/CLI rebuild (blocked)
+
+The repackage retains the official Jellyfin 12.4 image index digest and original
+SSO plugin. SDK/App 0.38.2, CLI 0.41.6, templates 0.35.5 and executor/v0.38.2
+are pinned without development overrides. There is no wrapper UI dependency.
+The wizard declares the dedicated Jellyfin share (read-only media) and native
+port selection. The upstream OIDC provider receives the selected loopback issuer
+port using the documented SDK runtime binding; configuration fingerprints include
+that port so retained App data is resynchronized when it changes.
+
+`npm ci --ignore-scripts --offline --registry=https://registry.npmjs.org` passes
+from integrity-checked official npm bytes; direct registry.npmjs.org requests
+returned HTTP 403 on the build host, so the same official registry's
+registry.npmjs.com endpoint supplied the initial downloads. The lock retains
+canonical registry.npmjs.org URLs and official integrities. Four runtime tests,
+five hardware-adapter tests, three version tests and the Go App-entry contract
+package pass. CLI check passes with no warnings. Rendering is reproducible.
+The Docker retention integration test is updated for the selected issuer port
+but has not run for this rebuild.
+
+CLI 0.41.6 blocks the SPK build with
+`COMPOSE_STORAGE_INIT_INVALID: runtime port must reference install.ports`.
+Its `dist/standalone/compose.js` `lockComposeImages` function passes
+`installSettings` but omits `installPorts` when calling `readComposeApp`.
+The earlier manifest-validation path passes both. SDK 0.38.2 correctly rejects
+the missing port definition in `compose/plan.go`. The failure reproduces
+offline by loading this valid manifest and calling
+`lockComposeImages(manifest, 'x86_64', false)`; it is independent of registry
+connectivity. No SDK/CLI patch or App-side workaround is included.
+
+The initial image lookup also returned HTTP 403 from Docker Hub. The CLI's
+documented metadata mirror transport advanced the build to the port-binding
+failure without changing the upstream repository or pinned image digest.
+No SPK was produced, so inspection and the SPK privacy scan are blocked.
+
+The new minimal CLI-helper smoke suite retains the existing e2e suite and uses
+Jellyfin's native `#loginPage` marker after DSM admission. A, N and X were all
+executed against the designated test device with an existing non-admin account
+from the project secrets file; none were skipped. All three failed before App
+entry with browser `net::ERR_CERT_AUTHORITY_INVALID`. CLI `dsmTarget()` creates
+the web engine without a certificate-trust configuration. This run does not
+establish App authentication behavior. The existing installed package remains
+12.2-0010 with DSM status `start_failed`; the blocked rebuild was not installed.
+No accounts or device settings were changed. Device identity and raw traces
+remain outside Git. A/N/X must be rerun on the rebuilt artifact after the CLI
+port-binding fix and browser certificate trust are available.
+
+The change is not approved for merge while build, inspect and device gates are
+unmet. No release, catalog or CI change is included.
+
 ## 12.2-0006 port change
 
 Four runtime tests, five hardware-adapter tests, three version tests and

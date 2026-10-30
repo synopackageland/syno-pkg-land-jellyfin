@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--storage-init", type=Path, required=True)
 parser.add_argument(
     "--image",
-    default="jellyfin/jellyfin@sha256:357724bf0ae27a672c7cbaa899db2d9abeb13dbd8657ccce750258a4c059d037",
+    default=None,
 )
 parser.add_argument("--name-prefix", default="jellyfin-retention")
 options = parser.parse_args()
@@ -31,7 +31,13 @@ media.mkdir(exist_ok=True)
 media.chmod(0o555)
 name = options.name_prefix + "-" + uuid.uuid4().hex[:12]
 volume = name + "-data"
-image = options.image
+image = options.image or c["image"]
+ports = root / "ports"
+ports.mkdir()
+port = ports / "oidc_issuer.value"
+port.write_text("29490\n")
+port.chmod(0o600)
+os.chown(port, 65000, 65000)
 
 
 def run(value):
@@ -69,6 +75,8 @@ def run(value):
         str(secret) + ":/synopkgland/secrets:ro",
         "-v",
         str(media) + ":/media:ro",
+        "-v",
+        str(ports) + ":/var/packages/SynoPkgJellyfin/target/install/port-values:ro",
         "-e",
         "JELLYFIN_BIND=127.0.0.1",
         "-e",

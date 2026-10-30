@@ -2,8 +2,10 @@
 
 ## Current package
 
-Version **12.2-0012** uses published SDK/App/templates **0.32.0**,
-CLI **0.34.0** and executor **v0.32.0**. Protected executors require
+Version **12.4-0002** pins published SDK/App **0.38.2**, templates **0.35.5**,
+CLI **0.41.6** and executor **v0.38.2**. This rebuild is pending the CLI
+port-binding build fix documented in [validation](docs/validation.md).
+Protected executors require
 administrator approval after upgrading. Device and mobile-client acceptance
 are separate from the offline package gates.
 
@@ -40,13 +42,14 @@ endpoints can require other paths. No additional prefixes are implied.
 Native login, Quick Connect approval and complete playback flows remain
 unverified on a deployed package. DSM logout does not revoke upstream tokens.
 
-This wrapper uses the unmodified official Jellyfin 12.2 image, the unmodified
+This wrapper uses the unmodified official Jellyfin 12.4 image, the unmodified
 SSO Authentication 4.0.0.4 plugin, and the embedded SDK OIDC provider.
-The SPK is `SynoPkgJellyfin` / `12.2-0012` / x86_64.
+The rebuild target is `SynoPkgJellyfin` / `12.4-0002` / x86_64.
 
-The native install wizard selects an existing Shared Folder for `/media`, mounted
-read-only. Selection does not grant access: in DSM Shared Folder permissions,
-choose **System internal user** and grant `SynoPkgJellyfin` read access.
+The native install wizard defaults to the dedicated `Jellyfin` Shared Folder
+for `/media`, mounted read-only. DSM creates the share and grants the package
+account read access. An existing share must pass the SDK access validation.
+Shared media remains after uninstall.
 Configuration and cache use private named volumes. Intel GPU support uses the
 SDK capability described below; DLNA is not enabled.
 
@@ -58,17 +61,18 @@ commits. Do not describe its HEAD as the source tree of the pinned release image
 ## Build
 
 Use Node 24 and Go 1.26.10 on a Linux build host with access to the released SDK
-module. SDK/App/templates are pinned to 0.32.0 and CLI to 0.34.0, executor to executor/v0.32.0
-and UI to 0.14.4. Install the locked published dependencies and run:
+module. SDK/App are pinned to 0.38.2, templates to 0.35.5, CLI to 0.41.6 and
+executor to executor/v0.38.2. The upstream UI does not use our UI kit.
+Install the locked published dependencies and run:
 
 ```sh
 cd synology
-npm ci --ignore-scripts
+npm ci --ignore-scripts --registry=https://registry.npmjs.org
 python3 scripts/render.py
 npm test
 npx --no-install synopkgland check --json
 npx --no-install synopkgland build --arch x86_64 --json
-npx --no-install synopkgland inspect dist/SynoPkgJellyfin-12.2-0012-x86_64.spk --json
+npx --no-install synopkgland inspect dist/SynoPkgJellyfin-12.4-0002-x86_64.spk --json
 ```
 
 `render.py` verifies the original plugin ZIP's pinned SHA-256 before embedding
@@ -90,8 +94,11 @@ The first-configuration adapter uses loopback port 29497 and stops before the
 configured server starts on loopback port 29496. Jellyfin briefly replaces its
 startup-status listener at each process launch. The SDK waits for
 `/System/Ping` to return exactly HTTP 200 before admitting the backend; inspect
-reports `host-uid-listener-health`. OIDC issuer port 29490 stays loopback.
-HTTPS 33443 is the SDK entry. Auxiliary discovery is disabled. The explicit host
+reports `host-uid-listener-health`. OIDC issuer port 29490 stays loopback by default.
+HTTPS 33443 is the default SDK entry. The install wizard validates port choices;
+upgrades retain the saved choices. The adapter receives the selected issuer
+port through the SDK runtime binding and refreshes its native provider on change.
+Auxiliary discovery is disabled. The explicit host
 network is required to reach the SDK loopback issuer; it is unrelated to DLNA.
 
 ## Login and acceptance
@@ -117,6 +124,14 @@ private account JSON files, a private profile directory, a reachable DSM URL,
 `DSM_E2E_ACCOUNT_ADMIN`, `DSM_E2E_ACCOUNT_READER`, `DSM_E2E_PROFILE_DIR`, and
 `DSM_E2E_OUTPUT_DIR` settings. Keep credentials, profiles, traces and screenshots
 outside version control. Test certificate trust is separate from OIDC correctness.
+
+The minimal `npm run e2e:smoke` suite uses the CLI's `appOpenSmoke` helper.
+It checks A (administrator), N (normal user with this App's privilege) and X
+(a fresh anonymous browser). Supply `DSM_E2E_ACCOUNT_ADMIN` and
+`DSM_E2E_ACCOUNT_NORMAL` as mode-600 account files and `DSM_E2E_URL` as the
+reachable DSM origin. `#loginPage` is Jellyfin's native UI marker after the DSM
+entry gate; this smoke does not certify upstream OIDC sign-in or media playback.
+The existing full e2e suite remains available through `npm run e2e`.
 
 The optional Linux Docker integration probe runs as root on a disposable Linux
 Docker host (to prepare UID 65000 fixture-file ownership), with
