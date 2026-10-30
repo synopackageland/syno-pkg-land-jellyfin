@@ -3,8 +3,9 @@
 ## Current package
 
 Version **12.4-0002** pins published SDK/App **0.38.2**, templates **0.35.5**,
-CLI **0.41.6** and executor **v0.38.2**. This rebuild is pending the CLI
-port-binding build fix documented in [validation](docs/validation.md).
+CLI **0.41.8** and executor **v0.38.2**. Validation and device acceptance
+are recorded in [validation](docs/validation.md). The rebuild is installed;
+smoke acceptance is pending the CLI 0.41.9 certificate-handling update.
 Protected executors require
 administrator approval after upgrading. Device and mobile-client acceptance
 are separate from the offline package gates.
@@ -61,7 +62,7 @@ commits. Do not describe its HEAD as the source tree of the pinned release image
 ## Build
 
 Use Node 24 and Go 1.26.10 on a Linux build host with access to the released SDK
-module. SDK/App are pinned to 0.38.2, templates to 0.35.5, CLI to 0.41.6 and
+module. SDK/App are pinned to 0.38.2, templates to 0.35.5, CLI to 0.41.8 and
 executor to executor/v0.38.2. The upstream UI does not use our UI kit.
 Install the locked published dependencies and run:
 

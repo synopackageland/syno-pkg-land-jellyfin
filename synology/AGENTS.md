@@ -9,8 +9,9 @@ admin group through the plugin's supported policy; do not replace OIDC with a
 shared administrator account. Runtime must remain the package UID without root
 or added capabilities.
 
-The native wizard selects an existing read-only media share. Selection does not
-grant package-account ACLs. Do not infer access from the selected path.
+The native wizard defaults to the dedicated Jellyfin share, mounted read-only.
+DSM manages its package-account grant. Optional existing shares must pass the
+SDK access validation; do not infer access from the selected path.
 
 Dependency pins stay at released versions. Development source overrides must
 identify exact reviewed SDK/CLI commits and must never be published as a release.
