@@ -30,7 +30,9 @@ fi
 BOOTSTRAP_PASSWORD=$(cat "$state/bootstrap.secret")
 case "$BOOTSTRAP_PASSWORD" in *[!0-9a-f]*) exit 1;; esac
 [ "${#BOOTSTRAP_PASSWORD}" -eq 64 ] || exit 1
-oidc_fingerprint=$(printf '%s' "$OIDC_SECRET" | sha256sum | cut -d ' ' -f 1)
+case "${OIDC_ISSUER_PORT:?}" in ''|*[!0-9]*) exit 1;; esac
+[ "$OIDC_ISSUER_PORT" -ge 1024 ] && [ "$OIDC_ISSUER_PORT" -le 65535 ] || exit 1
+oidc_fingerprint=$(printf '%s:%s' "$OIDC_SECRET" "$OIDC_ISSUER_PORT" | sha256sum | cut -d ' ' -f 1)
 budget=${SYNOPKGLAND_STARTUP_BUDGET_SECONDS:?}
 case "$budget" in ''|*[!0-9]*) exit 1;; esac
 deadline=$(($(date +%s)+budget))
@@ -64,7 +66,7 @@ if [ ! -f "$state/bootstrap.complete" ] || [ "$(cat "$state/oidc.fingerprint" 2>
     token=$(printf '%s' "$response" | sed -n 's/.*"AccessToken"[[:space:]]*:[[:space:]]*"\([0-9a-fA-F]*\)".*/\1/p')
     [ -n "$token" ] || { stop; echo 'Bootstrap authentication failed' >&2; exit 1; }
     printf 'header = "Authorization: MediaBrowser Token=%s"\n' "$token" > "$state/curl-auth.conf"
-    sed "s/__CLIENT_SECRET__/$OIDC_SECRET/g" "$state/provider.json" > "$state/provider-live.json"
+    sed "s/__CLIENT_SECRET__/$OIDC_SECRET/g; s/__OIDC_ISSUER_PORT__/$OIDC_ISSUER_PORT/g" "$state/provider.json" > "$state/provider-live.json"
     curl -fsS --max-time 30 -K "$state/curl-auth.conf" -H 'Content-Type: application/json' --data-binary @"$state/provider-live.json" "$api/sso/OID/Add/dsm" >/dev/null
     # The supported branding API provides a one-click fallback after native hash-route logout.
     curl -fsS --max-time 30 -K "$state/curl-auth.conf" -H 'Content-Type: application/json' --data-binary @"$state/branding.json" "$api/System/Configuration/Branding" >/dev/null

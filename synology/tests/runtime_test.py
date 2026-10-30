@@ -10,7 +10,7 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(manifest["identity_gateway"]["oidc"]["issuer_port"], 29490)
         self.assertEqual(manifest["compose"]["web"]["port"], 29496)
         self.assertIn("network 29497", (ROOT / "container/start.sh").read_text())
-        self.assertEqual(manifest["build"], 1)
+        self.assertEqual(manifest["build"], 2)
         self.assertEqual(json.loads((ROOT / "dsm-package.yaml").read_text()), manifest)
 
     def renderer(self):
@@ -47,7 +47,7 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(service["network"], "host")
         self.assertEqual(
             manifest["install"]["sharedFolder"],
-            {"mode": "select", "key": "media", "permission": "ro"},
+            {"mode": "dedicated", "key": "media", "name": "Jellyfin", "permission": "ro"},
         )
         self.assertEqual(
             manifest["compose"]["shares"]["media"],
