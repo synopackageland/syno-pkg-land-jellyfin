@@ -28,7 +28,10 @@ The earlier manifest-validation path passes both. SDK 0.38.2 correctly rejects
 the missing port definition in `compose/plan.go`. The failure reproduces
 offline by loading this valid manifest and calling
 `lockComposeImages(manifest, 'x86_64', false)`; it is independent of registry
-connectivity. No SDK/CLI patch or App-side workaround is included.
+connectivity. The coordinator confirmed this CLI 0.41.6 defect and assigned
+a CLI patch thread to publish 0.41.7. Wait for the coordinator to confirm its
+npm availability before changing the pin or resuming build/device work.
+No SDK/CLI patch or App-side workaround is included.
 
 The initial image lookup also returned HTTP 403 from Docker Hub. The CLI's
 documented metadata mirror transport advanced the build to the port-binding
@@ -39,13 +42,16 @@ The new minimal CLI-helper smoke suite retains the existing e2e suite and uses
 Jellyfin's native `#loginPage` marker after DSM admission. A, N and X were all
 executed against the designated test device with an existing non-admin account
 from the project secrets file; none were skipped. All three failed before App
-entry with browser `net::ERR_CERT_AUTHORITY_INVALID`. CLI `dsmTarget()` creates
-the web engine without a certificate-trust configuration. This run does not
-establish App authentication behavior. The existing installed package remains
-12.2-0010 with DSM status `start_failed`; the blocked rebuild was not installed.
+entry with browser `net::ERR_CERT_AUTHORITY_INVALID`. This was a direct-HTTPS
+test transport failure and does not establish App authentication behavior.
+For the next run, use an SSH tunnel from the build host: forward a free
+loopback port to the device's DSM HTTP port 5000, set
+`DSM_E2E_URL=http://127.0.0.1:<port>/`, then close the tunnel after the run.
+Keep the tests and helper unchanged; no certificate bypass is needed.
+The existing installed package remains 12.2-0010 with DSM status `start_failed`; the blocked rebuild was not installed.
 No accounts or device settings were changed. Device identity and raw traces
 remain outside Git. A/N/X must be rerun on the rebuilt artifact after the CLI
-port-binding fix and browser certificate trust are available.
+port-binding fix is available, using the SSH tunnel transport above.
 
 The change is not approved for merge while build, inspect and device gates are
 unmet. No release, catalog or CI change is included.

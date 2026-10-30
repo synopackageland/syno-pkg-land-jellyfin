@@ -133,6 +133,11 @@ reachable DSM origin. `#loginPage` is Jellyfin's native UI marker after the DSM
 entry gate; this smoke does not certify upstream OIDC sign-in or media playback.
 The existing full e2e suite remains available through `npm run e2e`.
 
+If the test device's DSM certificate is not trusted by the browser, open an
+SSH tunnel from the build host, forwarding a free loopback port to DSM port
+5000. Run with `DSM_E2E_URL=http://127.0.0.1:<port>/` and close the tunnel
+afterwards. Keep the smoke test and CLI helper unchanged.
+
 The optional Linux Docker integration probe runs as root on a disposable Linux
 Docker host (to prepare UID 65000 fixture-file ownership), with
 `python3 tests/retention_test.py --storage-init /path/to/built/storage-init`. It
