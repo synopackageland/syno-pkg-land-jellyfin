@@ -3,9 +3,8 @@
 ## Current package
 
 Version **12.4-0002** pins published SDK/App **0.38.2**, templates **0.35.5**,
-CLI **0.41.8** and executor **v0.38.2**. Validation and device acceptance
-are recorded in [validation](docs/validation.md). The rebuild is installed;
-smoke acceptance is pending the CLI 0.41.9 certificate-handling update.
+CLI **0.41.9** and executor **v0.38.2**. Validation and device acceptance
+are recorded in [validation](docs/validation.md).
 Protected executors require
 administrator approval after upgrading. Device and mobile-client acceptance
 are separate from the offline package gates.
@@ -62,7 +61,7 @@ commits. Do not describe its HEAD as the source tree of the pinned release image
 ## Build
 
 Use Node 24 and Go 1.26.10 on a Linux build host with access to the released SDK
-module. SDK/App are pinned to 0.38.2, templates to 0.35.5, CLI to 0.41.8 and
+module. SDK/App are pinned to 0.38.2, templates to 0.35.5, CLI to 0.41.9 and
 executor to executor/v0.38.2. The upstream UI does not use our UI kit.
 Install the locked published dependencies and run:
 
@@ -134,10 +133,9 @@ reachable DSM origin. `#loginPage` is Jellyfin's native UI marker after the DSM
 entry gate; this smoke does not certify upstream OIDC sign-in or media playback.
 The existing full e2e suite remains available through `npm run e2e`.
 
-If the test device's DSM certificate is not trusted by the browser, open an
-SSH tunnel from the build host, forwarding a free loopback port to DSM port
-5000. Run with `DSM_E2E_URL=http://127.0.0.1:<port>/` and close the tunnel
-afterwards. Keep the smoke test and CLI helper unchanged.
+CLI 0.41.9's DSM e2e helper accepts self-signed DSM and gateway certificates
+for A/N/X. Use the reachable DSM HTTPS origin in `DSM_E2E_URL`; a certificate
+warning does not require an HTTP tunnel or App-side changes.
 
 The optional Linux Docker integration probe runs as root on a disposable Linux
 Docker host (to prepare UID 65000 fixture-file ownership), with

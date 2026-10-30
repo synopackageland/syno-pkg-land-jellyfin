@@ -1,6 +1,43 @@
 # Validation scope
 
-## 12.4-0002 CLI 0.41.8 rebuild (smoke pending)
+## 12.4-0002 CLI 0.41.9 acceptance
+
+The final repackage pins SDK/App 0.38.2, CLI 0.41.9, templates 0.35.5 and
+executor/v0.38.2. All 123 npm lockfile download URLs use registry.npmjs.org.
+The official registry's .com endpoint supplied bytes after direct .org requests
+returned HTTP 403; a subsequent offline install used the required .org registry.
+No mirror URL, development override or toolchain source patch is in the package.
+
+The x86_64 build and inspect pass with `findings=[]`. The final SPK is
+29,548,544 bytes with SHA-256
+`dcad2b5c9b4618e5bccef1f97f5b828eb7490641af08a74f98a4b234c0e3968c`.
+This is byte-identical to the previously inspected artifact. Wrapper diff and
+expanded-SPK privacy scans found no private information. The final artifact
+was installed again through the supported CLI flow with no wizard overrides;
+the existing dedicated Jellyfin share and port choices were retained. DSM
+reports 12.4-0002 running with status code 0. Earlier readback confirmed the
+package UID, nonprivileged container and read-only dedicated `/media` mount;
+those unchanged properties were not separately retested.
+
+`npm run e2e:smoke` passes **A / N / X: 3 executed, 3 passed, 0 skipped** on
+the assigned device using its direct DSM HTTPS origin. CLI 0.41.9 accepts the
+self-signed DSM and gateway certificates; no tunnel or App/test/helper patch
+was used. The first direct run passed A/X but N correctly reached
+`app_privilege_denied`: the existing non-admin test account lacked this App's
+permission. Only the `SYNO.SDS.SynoPkgJellyfin.Instance` user rule was granted
+through DSM's supported App Privileges API, with successful readback. Group
+membership was unchanged, and the smoke verifies N is not an administrator.
+Repeating the smoke after this fixture correction passed all three roles.
+The `app-privilege` entry policy was preserved.
+
+Only build, inspect, install and minimal smoke were repeated for this final
+CLI change. The full e2e and regression suites were not rerun. The smoke's
+`#loginPage` marker proves that Jellyfin's native login UI loads after DSM
+admission; it does not certify native OIDC JIT identity, media playback or
+full lifecycle behavior. Prior results below retain their original scope.
+No release tag, publication, catalog entry or Actions change is included.
+
+## 12.4-0002 CLI 0.41.8 rebuild (historical)
 
 SDK/App 0.38.2, templates 0.35.5 and executor/v0.38.2 remain pinned; CLI is
 now 0.41.8. Every npm lockfile URL points to registry.npmjs.org. Direct requests
@@ -39,12 +76,10 @@ anonymous entry flow. These failures do not establish successful admission
 or denial. No test or helper was modified, and the App entry remains
 `app-privilege`. Raw traces and device details remain outside Git.
 
-The coordinator has assigned certificate acceptance to CLI 0.41.9. This
-thread is paused until its npm availability is confirmed. Then bump only the
-released CLI and rerun the smoke, retaining the SSH transport and resolving
-any remaining redirect connectivity. Keep the PR draft until A/N/X pass.
-The SSH tunnel was closed after this attempt. No release or catalog change
-was made.
+Certificate acceptance was subsequently fixed in CLI 0.41.9. This earlier
+attempt paused without changing the App or helper. Its SSH tunnel was closed;
+no release or catalog change was made. The later CLI 0.41.9 run uses the
+direct DSM HTTPS origin.
 
 ## 12.4-0002 earlier CLI 0.41.6 attempt (historical)
 

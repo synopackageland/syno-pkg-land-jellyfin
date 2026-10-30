@@ -15,7 +15,7 @@
   "devDependencies": {
     "@ai-sdk/openai": "4.0.91",
     "@e2e-dev/web": "0.14.0",
-    "@synopackageland/cli": "0.41.8",
+    "@synopackageland/cli": "0.41.9",
     "@synopackageland/templates": "0.35.5",
     "ai": "7.0.137",
     "e2e": "0.19.0",
