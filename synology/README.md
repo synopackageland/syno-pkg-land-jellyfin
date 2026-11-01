@@ -2,8 +2,8 @@
 
 ## Current package
 
-Version **12.4-0002** pins published SDK/App **0.38.2**, templates **0.35.5**,
-CLI **0.41.9** and executor **v0.38.2**. Validation and device acceptance
+Version **12.4-0003** pins published SDK/App **0.42.0**, templates **0.35.5**,
+CLI **0.42.2** and executor **v0.42.0**. Validation and device acceptance
 are recorded in [validation](docs/validation.md).
 Protected executors require
 administrator approval after upgrading. Device and mobile-client acceptance
@@ -44,7 +44,7 @@ unverified on a deployed package. DSM logout does not revoke upstream tokens.
 
 This wrapper uses the unmodified official Jellyfin 12.4 image, the unmodified
 SSO Authentication 4.0.0.4 plugin, and the embedded SDK OIDC provider.
-The rebuild target is `SynoPkgJellyfin` / `12.4-0002` / x86_64.
+The rebuild target is `SynoPkgJellyfin` / `12.4-0003` / x86_64.
 
 The native install wizard defaults to the dedicated `Jellyfin` Shared Folder
 for `/media`, mounted read-only. DSM creates the share and grants the package
@@ -61,8 +61,8 @@ commits. Do not describe its HEAD as the source tree of the pinned release image
 ## Build
 
 Use Node 24 and Go 1.26.10 on a Linux build host with access to the released SDK
-module. SDK/App are pinned to 0.38.2, templates to 0.35.5, CLI to 0.41.9 and
-executor to executor/v0.38.2. The upstream UI does not use our UI kit.
+module. SDK/App are pinned to 0.42.0, templates to 0.35.5, CLI to 0.42.2 and
+executor to executor/v0.42.0. The upstream UI does not use our UI kit.
 Install the locked published dependencies and run:
 
 ```sh
@@ -72,7 +72,7 @@ python3 scripts/render.py
 npm test
 npx --no-install synopkgland check --json
 npx --no-install synopkgland build --arch x86_64 --json
-npx --no-install synopkgland inspect dist/SynoPkgJellyfin-12.4-0002-x86_64.spk --json
+npx --no-install synopkgland inspect dist/SynoPkgJellyfin-12.4-0003-x86_64.spk --json
 ```
 
 `render.py` verifies the original plugin ZIP's pinned SHA-256 before embedding
