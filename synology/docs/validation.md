@@ -1,5 +1,42 @@
 # Validation scope
 
+## 12.4-0003 CLI 0.42.2 rebuild
+
+This build retains the upstream Jellyfin 12.4 image digest and SSO Authentication
+4.0.0.4 plugin. Published pins are CLI 0.42.2, SDK/App 0.42.0 and
+executor/v0.42.0. The UI record is 0.19.2; Jellyfin uses its own UI. The wrapper
+keeps templates 0.35.5 while CLI 0.42.2 resolves templates 0.37.0 internally.
+The catalog still lists 12.2-0010 and the repository previously built 12.4-0002;
+this refresh therefore increments only the build to 12.4-0003.
+
+All 125 npm lockfile download URLs use registry.npmjs.org. The affected checks
+passed: four Python runtime tests, five hardware-adapter tests, three Node
+version tests and the Go entry-contract test against SDK 0.42.0. CLI
+check passed without warnings. Build and inspect passed for the sole declared
+architecture, x86_64; inspect returned findings=[]. The SPK is unsigned.
+A privacy scan of tracked wrapper files and all unpacked SPK files found no
+private paths, NAS aliases/addresses, thread identifiers or credentials.
+Loopback runtime addresses and documentation-only fixture addresses are intentional.
+
+One existing test installation was upgraded in place from 12.4-0002 to
+12.4-0003, without uninstalling or deleting data. DSM reports running/status
+code 0. The named data volume and native database remain present; system,
+encoding and branding XML hashes, the retained bootstrap credential hash and
+OIDC fingerprint are unchanged. Container readback retains the package UID,
+non-privileged runtime, cap_drop ALL and read-only media mount. An administrator
+opened Jellyfin through DSM launchApp and the generated menu CGI; both reached
+the native login page on HTTPS port 33443. This is a bounded open check, not a
+repeat of the broader identity, playback or lifecycle suite.
+
+Ingress limitation: this OIDC Compose manifest passes CLI 0.42.2 check but the
+CLI still generates /webman/3rdparty/SynoPkgJellyfin/sso/open.cgi and a native
+HTTPS listener on port 33443. It does not generate
+/synopkgland/SynoPkgJellyfin/; that requested path returns HTTP 404 on the test
+installation. The fixed /synopkgland/<package>/ contract in this CLI applies
+to daemon.ingress. No manual proxy or upstream source change was added to
+emulate that separate contract. Acceptance of that exact path remains pending
+SDK/CLI support or an approved architecture change.
+
 ## 12.4-0002 CLI 0.41.9 acceptance
 
 The final repackage pins SDK/App 0.38.2, CLI 0.41.9, templates 0.35.5 and

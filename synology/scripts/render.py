@@ -76,7 +76,7 @@ def manifest():
             "sharedFolder": {"mode": "dedicated", "key": "media", "name": "Jellyfin", "permission": "ro"}
         },
         "compose": {
-            "sdk": "0.38.2",
+            "sdk": "0.42.0",
             "files": ["compose.yaml"],
             "devices": {"gpu": {"services": ["jellyfin"]}},
             "shares": {
@@ -146,7 +146,7 @@ def manifest():
             "network": {"egress": "internet"},
         },
         "identity_gateway": {
-            "sdk": "0.38.2",
+            "sdk": "0.42.0",
             "mode": "oidc",
             "access": "dsm-users",
             "upstream_auth_paths": ['/System', '/Users', '/QuickConnect', '/Items', '/UserItems', '/UserViews', '/Sessions', '/Videos', '/Audio', '/socket', '/Auth', '/Playback'],

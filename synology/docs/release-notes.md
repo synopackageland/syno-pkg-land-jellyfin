@@ -1,5 +1,13 @@
 # Release notes
 
+## 12.4-0003
+
+Rebuild unchanged upstream Jellyfin 12.4 with published CLI 0.42.2, SDK/App
+0.42.0 and executor/v0.42.0. The recorded UI pin is 0.19.2; Jellyfin uses its
+own upstream UI. The wrapper templates dependency remains 0.35.5; the CLI
+resolves its own templates 0.37.0. Entry and OIDC policies remain unchanged.
+See [validation](validation.md) for this artifact's device acceptance boundary.
+
 ## 12.2-0012
 
 Built with published SDK/App/templates 0.32.0, CLI 0.34.0 and executor v0.32.0.
