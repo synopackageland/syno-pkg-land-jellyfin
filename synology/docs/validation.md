@@ -2,30 +2,63 @@
 
 ## 12.4-0004 DSM path ingress migration
 
-The gateway declares `/synopkgland/SynoPkgJellyfin/` on the DSM origin with
+The gateway serves `/synopkgland/SynoPkgJellyfin/` on the DSM origin with
 OIDC, dsm-users admission and App privilege unchanged. The official image,
-plugin hash and native authentication exceptions are retained. The native
-BaseUrl, bootstrap API, login branding and health probes share the prefix;
-gateway callback declarations remain relative. Only the loopback OIDC issuer
-remains in the install-port wizard. Startup health allows a 180-second warmup.
+plugin hash and native authentication exceptions are retained. Native BaseUrl,
+bootstrap API, login branding and health probes share the prefix; gateway
+callback declarations remain relative. Only the loopback OIDC issuer remains
+in the install-port wizard. Startup health allows a 180-second warmup.
 Pins are CLI 0.43.0, SDK/App 0.43.1, templates 0.38.0 and executor v0.39.0.
-The build host and CLI both use Go 1.26.10.
+The build host and CLI both use Go 1.26.10, with the released Go module and
+verified official Go checksums. No source override is used.
 
 Five runtime tests, five hardware-adapter tests and three version tests pass.
-The retained-volume regression proves base-path changes resynchronize native
-login configuration, every bootstrap API request stays under the prefix, and
-unchanged subsequent starts skip bootstrap. The existing browser suite loads
-with prefixed routes and retains distinct identity, role, media and logout
-assertions. Loading the suite is not browser acceptance.
+The Go entry contract passes against SDK 0.43.1 and the unpacked gateway policy
+with a materialized installer-selected issuer-port fixture. The retained-volume
+regression proves base-path changes resynchronize native login configuration,
+bootstrap API requests stay under the prefix, and unchanged subsequent starts
+skip bootstrap. CLI check has no warnings; x86_64 build and inspect pass with
+findings=[]. All 124 npm download URLs use registry.npmjs.org. Scoped privacy
+scans cover 52 tracked wrapper files and 117 unpacked SPK files with no findings.
+The SPK is unsigned. The separate Docker retention script was updated but not run.
 
-Release dependency blocker: npm SDK 0.43.1 is published, but its Go module tag
-v0.43.1 is not discoverable. Go entry tests, CLI check and build fail while
-resolving that module. No source override or downgrade is included. A candidate
-SPK and inspect result are unavailable, and the installed package remains at
-12.4-0003. Device authentication, assets, API, WebSocket, playback, removal of
-the old listener and post-upgrade data retention remain pending for this build.
-A scoped tracked-wrapper privacy scan reports no findings; SPK scanning awaits
-a successful build.
+An existing installation was upgraded in place from 12.4-0003 to 12.4-0004.
+DSM reports running/status code 0 and the container is healthy. Native BaseUrl
+and the generated DSM resource use the fixed package path. The old public
+HTTPS port 33443 no longer listens. Data/config/cache volume mappings, read-only
+media mount, existing native user IDs and a private retention marker survive;
+system.xml, encoding.xml and the retained bootstrap credential hashes are
+unchanged. Network and branding configuration change as intended.
+
+The existing browser suite passes three OIDC functional tests plus two setup
+tests. Both administrator and existing non-admin DSM accounts launch from the
+DSM menu, complete SSO, retain distinct signed-sub identities, map the correct
+native administrator policy, render the media library, read an actual video
+range (206/4096 bytes), and fetch a non-empty transcoded MP4 (200/ftyp). Both
+browser WebSocket handshakes return 101 under the prefix and observed script/
+stylesheet responses have no failures. Native logout and reopening restore
+the same identity. Anonymous native API access returns 401. The minimal A/N/X
+suite passes without skips. A separate real-browser anonymous entry reaches
+DSM sign-in. The App-privilege-denied browser test also passes; the fixture
+user's one-App rule is temporarily denied and all original rules are restored
+and compared exactly. No DSM accounts or groups are created or changed.
+
+The final upgraded package also passes native stop/start: stop leaves no running
+package container and start returns DSM running/status 0 with healthy readback.
+An earlier lifecycle attempt exposed stale Container Manager project/profile
+metadata on the test installation. A native same-version repair without wizard
+values then failed preinst and temporarily removed package registration.
+Recovery retained all named volumes/images, restored 12.4-0003 through the
+supported package installation flow with explicit wizard values, and repaired
+only this package's duplicate project registration. The restored original passed
+stop/start before the migration and lifecycle checks were repeated. Recovery changed only package-owned fixture state.
+
+The WebSocket probe uses upstream's current ApiKey query parameter, without
+enabling legacy authorization. Media fixture selection uses its actual indexed
+name and the library locator selects visible navigation. Only synthetic media
+in the dedicated read-only share is used. Screenshots and private diagnostics
+remain outside Git. External providers, QuickConnect, native mobile clients,
+fresh installation and longer-term load are outside this acceptance scope.
 
 ## 12.4-0003 CLI 0.42.2 rebuild
 

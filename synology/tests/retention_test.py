@@ -35,7 +35,7 @@ image = options.image or c["image"]
 ports = root / "ports"
 ports.mkdir()
 port = ports / "oidc_issuer.value"
-port.write_text("29490\n")
+port.write_text("29490")
 port.chmod(0o600)
 os.chown(port, 65000, 65000)
 

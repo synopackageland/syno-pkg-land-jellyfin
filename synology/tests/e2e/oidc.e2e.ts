@@ -16,6 +16,26 @@ for(const [session,admin] of [['admin',true],['user',false]] as const){
     desktop.context().waitForEvent('page',{timeout:30_000}),
     desktop.getByRole('menuitem',{name:'Jellyfin',exact:true}).click(),
    ]);
+   const assetFailures: string[]=[];
+   page.on('response',response=>{
+    const request=response.request();
+    const url=new URL(response.url());
+    if(['script','stylesheet'].includes(request.resourceType()) &&
+       (request.headers()['referer'] ?? '').includes(basePath+'/') &&
+       (!url.pathname.startsWith(basePath+'/') || response.status()>=400)){
+     assetFailures.push(`${response.status()} ${url.pathname}`);
+    }
+   });
+   const network=await page.context().newCDPSession(page);
+   await network.send('Network.enable');
+   const socketPaths=new Map<string,string>();
+   const socketStatuses: number[]=[];
+   network.on('Network.webSocketCreated',event=>{
+    socketPaths.set(event.requestId,new URL(event.url).pathname);
+   });
+   network.on('Network.webSocketHandshakeResponseReceived',event=>{
+    if(socketPaths.get(event.requestId)===basePath+'/socket')socketStatuses.push(event.response.status);
+   });
    console.log('DSM menu entry opened');
    const signIn=page.getByRole('button',{name:'Sign in with DSM',exact:true});
    const userMenu=page.getByRole('button',{name:'User Menu',exact:true});
@@ -51,6 +71,20 @@ for(const [session,admin] of [['admin',true],['user',false]] as const){
    await page.getByRole('button',{name:'User Menu',exact:true}).waitFor({timeout:30_000});
    await page.screenshot({path:join(process.env.DSM_E2E_OUTPUT_DIR!,`menu-${session}.png`)});
    console.log('Native home rendered');
+   await page.evaluate(base=>new Promise<void>((resolve,reject)=>{
+    const server=JSON.parse(localStorage.getItem('jellyfin_credentials')!).Servers[0];
+    const url=new URL(base+'/socket',location.href);
+    url.protocol=location.protocol==='https:'?'wss:':'ws:';
+    url.searchParams.set('ApiKey',server.AccessToken);
+    url.searchParams.set('deviceId',localStorage.getItem('_deviceId2')!);
+    const socket=new WebSocket(url);
+    const timer=setTimeout(()=>{socket.close();reject(new Error('Native WebSocket did not open'));},30_000);
+    socket.onopen=()=>{clearTimeout(timer);socket.close();resolve();};
+    socket.onerror=()=>{clearTimeout(timer);reject(new Error('Native WebSocket failed'));};
+   }),basePath);
+   expect(socketStatuses).toContain(101);
+   expect(assetFailures).toEqual([]);
+   await writeFile(join(process.env.DSM_E2E_OUTPUT_DIR!,`network-${session}.json`),JSON.stringify({socketStatuses,assetFailures})+'\n');
    const media=await page.evaluate(async ({base,fixture})=>{
     const server=JSON.parse(localStorage.getItem('jellyfin_credentials')!).Servers[0];
     const headers={Authorization:`MediaBrowser Token=${server.AccessToken}`};
@@ -66,6 +100,10 @@ for(const [session,admin] of [['admin',true],['user',false]] as const){
    },{base:basePath,fixture:process.env.JELLYFIN_E2E_MEDIA_NAME ?? 'SSO Fixture'});
    expect(media.status).toBe(206);expect(media.bytes).toBe(4096);expect(media.mp4).toBe('ftyp');
    expect(media.transcodeStatus).toBe(200);expect(media.transcodeBytes).toBeGreaterThan(0);expect(media.transcodeMp4).toBe('ftyp');
+   await page.screenshot({path:join(process.env.DSM_E2E_OUTPUT_DIR!,`menu-${session}.png`)});
+   await page.getByText('Media',{exact:true}).filter({visible:true}).first().click({timeout:30_000});
+   await page.getByText(process.env.JELLYFIN_E2E_MEDIA_NAME ?? 'SSO Fixture',{exact:true}).filter({visible:true}).first().waitFor({timeout:30_000});
+   await page.screenshot({path:join(process.env.DSM_E2E_OUTPUT_DIR!,`library-${session}.png`)});
    await page.getByRole('button',{name:'User Menu',exact:true}).click();
    await page.getByRole('menuitem',{name:'Sign Out',exact:true}).click();
    await page.getByRole('button',{name:'Sign in with DSM',exact:true}).waitFor({timeout:20_000});
