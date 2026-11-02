@@ -35,7 +35,7 @@ image = options.image or c["image"]
 ports = root / "ports"
 ports.mkdir()
 port = ports / "oidc_issuer.value"
-port.write_text("29490\n")
+port.write_text("29490")
 port.chmod(0o600)
 os.chown(port, 65000, 65000)
 
@@ -106,7 +106,7 @@ def run(value):
                 name,
                 "sh",
                 "-c",
-                'test -f /var/tmp/jellyfin/bootstrap.complete && test "$(curl -fsS --max-time 2 http://127.0.0.1:29496/health)" = Healthy',
+                'test -f /var/tmp/jellyfin/bootstrap.complete && test "$(curl -fsS --max-time 2 "http://127.0.0.1:29496$JELLYFIN_BASE_URL/health")" = Healthy',
             ],
             capture_output=True,
             text=True,

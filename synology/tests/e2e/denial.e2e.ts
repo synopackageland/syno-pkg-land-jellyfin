@@ -10,7 +10,7 @@ test('denied DSM App privilege returns 403',{
  await openDesktop(app);const page=dsmPage();await registerDsmSecrets(page);
  const context=page.context();
  await context.clearCookies({name:'synopkgland_sso_SynoPkgJellyfin'});
- const entry=await context.request.get(new URL('/',process.env.JELLYFIN_E2E_URL!).href,{
+ const entry=await context.request.get(new URL('/synopkgland/SynoPkgJellyfin/',process.env.JELLYFIN_E2E_URL!).href,{
   headers:{Accept:'text/html','Sec-Fetch-Mode':'navigate'},maxRedirects:0,ignoreHTTPSErrors:true,
  });
  expect(entry.status()).toBe(302);
@@ -19,7 +19,7 @@ test('denied DSM App privilege returns 403',{
  const dsm=new URL(process.env.DSM_E2E_URL!);
  authorize.protocol=dsm.protocol;authorize.host=dsm.host;
  const [refused]=await Promise.all([
-  page.waitForResponse(response=>new URL(response.url()).pathname==='/_sso/dsm-return',{timeout:30_000}),
+  page.waitForResponse(response=>new URL(response.url()).pathname==='/synopkgland/SynoPkgJellyfin/_sso/dsm-return',{timeout:30_000}),
   page.goto(authorize.href),
  ]);
  expect(refused.status()).toBe(403);

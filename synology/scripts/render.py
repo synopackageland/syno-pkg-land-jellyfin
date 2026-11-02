@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_SHA = "c09f16ba31059a434ddd7f811e4f9608d4b4c4514cc80a5bf1ca33bee61e1107"
 IMAGE = "jellyfin/jellyfin:12.2@sha256:357724bf0ae27a672c7cbaa899db2d9abeb13dbd8657ccce750258a4c059d037"
 STATE = "/var/tmp/jellyfin"
+BASE_URL = "/synopkgland/SynoPkgJellyfin"
 
 
 def plugin_files(file):
@@ -76,7 +77,7 @@ def manifest():
             "sharedFolder": {"mode": "dedicated", "key": "media", "name": "Jellyfin", "permission": "ro"}
         },
         "compose": {
-            "sdk": "0.42.0",
+            "sdk": "0.43.1",
             "files": ["compose.yaml"],
             "devices": {"gpu": {"services": ["jellyfin"]}},
             "shares": {
@@ -115,7 +116,7 @@ def manifest():
                                     "target": STATE + "/branding.json",
                                     "content": json.dumps(
                                         {
-                                            "LoginDisclaimer": '<form action="/sso/OID/start/dsm"><button class="raised block emby-button button-submit">Sign in with DSM</button></form>',
+                                            "LoginDisclaimer": f'<form action="{BASE_URL}/sso/OID/start/dsm"><button class="raised block emby-button button-submit">Sign in with DSM</button></form>',
                                             "CustomCss": ".disclaimerContainer { display: block; }",
                                         }
                                     ),
@@ -141,16 +142,16 @@ def manifest():
             "web": {
                 "service": "jellyfin",
                 "port": 29496,
-                "health": {"path": "/System/Ping", "status": 200},
+                "health": {"path": BASE_URL + "/System/Ping", "status": 200},
             },
             "network": {"egress": "internet"},
         },
         "identity_gateway": {
-            "sdk": "0.42.0",
+            "sdk": "0.43.1",
             "mode": "oidc",
             "access": "dsm-users",
             "upstream_auth_paths": ['/System', '/Users', '/QuickConnect', '/Items', '/UserItems', '/UserViews', '/Sessions', '/Videos', '/Audio', '/socket', '/Auth', '/Playback'],
-            "listen": {"https": 33443},
+            "ingress": {"path": BASE_URL + "/"},
             "oidc": {
                 "issuer_port": 29490,
                 "clients": [
@@ -193,6 +194,7 @@ def render():
                 "entrypoint": ["/bin/sh", STATE + "/start.sh"],
                 "command": args,
                 "environment": {
+                    "JELLYFIN_BASE_URL": BASE_URL,
                     "JELLYFIN_DATA_DIR": STATE + "/config",
                     "JELLYFIN_CONFIG_DIR": STATE + "/config/config",
                     "JELLYFIN_CACHE_DIR": STATE + "/cache",
@@ -209,8 +211,10 @@ def render():
                 "healthcheck": {
                     "test": [
                         "CMD-SHELL",
-                        'test "$(curl -fsS http://127.0.0.1:29496/health)" = Healthy',
+                        f'test "$(curl -fsS --max-time 30 http://127.0.0.1:29496{BASE_URL}/health)" = Healthy',
                     ],
+                    "start_period": "180s",
+                    "timeout": "35s",
                 },
                 "stop_grace_period": "30s",
             }

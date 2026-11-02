@@ -2,8 +2,8 @@
 
 ## Current package
 
-Version **12.4-0003** pins published SDK/App **0.42.0**, templates **0.35.5**,
-CLI **0.42.2** and executor **v0.42.0**. Validation and device acceptance
+Version **12.4-0004** pins SDK/App **0.43.1**, templates **0.38.0**,
+CLI **0.43.0** and executor **v0.39.0**. Validation and device acceptance
 are recorded in [validation](docs/validation.md).
 Protected executors require
 administrator approval after upgrading. Device and mobile-client acceptance
@@ -33,8 +33,9 @@ They bypass DSM admission and keep upstream authentication and authorization.
 All other paths, including browser entry, retain the existing DSM gate.
 
 The configured prefixes cover core discovery, native authentication, Quick
-Connect, media listing, playback and events. Clients use the gateway HTTPS
-origin and upstream Jellyfin credentials, Quick Connect or existing API tokens;
+Connect, media listing, playback and events. Clients use the DSM HTTPS
+origin with `/synopkgland/SynoPkgJellyfin` as their server base path and upstream
+Jellyfin credentials, Quick Connect or existing API tokens;
 Jellyfin owns authorization and token revocation on those requests.
 `/web` and `/sso` remain DSM-gated. These prefixes are a core subset, not a
 complete list for every official client: music categories, TV and image
@@ -44,7 +45,7 @@ unverified on a deployed package. DSM logout does not revoke upstream tokens.
 
 This wrapper uses the unmodified official Jellyfin 12.4 image, the unmodified
 SSO Authentication 4.0.0.4 plugin, and the embedded SDK OIDC provider.
-The rebuild target is `SynoPkgJellyfin` / `12.4-0003` / x86_64.
+The rebuild target is `SynoPkgJellyfin` / `12.4-0004` / x86_64.
 
 The native install wizard defaults to the dedicated `Jellyfin` Shared Folder
 for `/media`, mounted read-only. DSM creates the share and grants the package
@@ -61,8 +62,8 @@ commits. Do not describe its HEAD as the source tree of the pinned release image
 ## Build
 
 Use Node 24 and Go 1.26.10 on a Linux build host with access to the released SDK
-module. SDK/App are pinned to 0.42.0, templates to 0.35.5, CLI to 0.42.2 and
-executor to executor/v0.42.0. The upstream UI does not use our UI kit.
+module. SDK/App are pinned to 0.43.1, templates to 0.38.0, CLI to 0.43.0 and
+executor to executor/v0.39.0. The upstream UI does not use our UI kit.
 Install the locked published dependencies and run:
 
 ```sh
@@ -72,7 +73,7 @@ python3 scripts/render.py
 npm test
 npx --no-install synopkgland check --json
 npx --no-install synopkgland build --arch x86_64 --json
-npx --no-install synopkgland inspect dist/SynoPkgJellyfin-12.4-0003-x86_64.spk --json
+npx --no-install synopkgland inspect dist/SynoPkgJellyfin-12.4-0004-x86_64.spk --json
 ```
 
 `render.py` verifies the original plugin ZIP's pinned SHA-256 before embedding
@@ -93,11 +94,13 @@ Only supported native setup/configuration APIs and config files are used.
 The first-configuration adapter uses loopback port 29497 and stops before the
 configured server starts on loopback port 29496. Jellyfin briefly replaces its
 startup-status listener at each process launch. The SDK waits for
-`/System/Ping` to return exactly HTTP 200 before admitting the backend; inspect
+`/synopkgland/SynoPkgJellyfin/System/Ping` to return exactly HTTP 200 before
+admitting the backend; inspect
 reports `host-uid-listener-health`. OIDC issuer port 29490 stays loopback by default.
-HTTPS 33443 is the default SDK entry. The install wizard validates port choices;
-upgrades retain the saved choices. The adapter receives the selected issuer
-port through the SDK runtime binding and refreshes its native provider on change.
+The browser entry is `/synopkgland/SynoPkgJellyfin/` on the DSM origin.
+The install wizard selects only the loopback OIDC issuer port; upgrades retain
+that choice. The adapter receives it through the SDK runtime binding and
+refreshes native login configuration when the issuer or base path changes.
 Auxiliary discovery is disabled. The explicit host
 network is required to reach the SDK loopback issuer; it is unrelated to DLNA.
 

@@ -1,17 +1,69 @@
-import importlib.util, pathlib, unittest, tempfile, json
+import importlib.util, pathlib, unittest, tempfile, json, os, subprocess, hashlib
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
 class RuntimeTests(unittest.TestCase):
-    def test_dedicated_gateway_port_and_rendered_manifest(self):
+    def test_path_ingress_and_rendered_manifest(self):
         manifest = self.renderer().manifest()
-        self.assertEqual(manifest["identity_gateway"]["listen"]["https"], 33443)
+        self.assertEqual(manifest["identity_gateway"]["ingress"]["path"], "/synopkgland/SynoPkgJellyfin/")
+        self.assertNotIn("listen", manifest["identity_gateway"])
+        self.assertTrue(manifest["install"]["ports"])  # Loopback OIDC issuer only
         self.assertEqual(manifest["identity_gateway"]["oidc"]["issuer_port"], 29490)
         self.assertEqual(manifest["compose"]["web"]["port"], 29496)
+        self.assertEqual(manifest["compose"]["web"]["health"]["path"], "/synopkgland/SynoPkgJellyfin/System/Ping")
         self.assertIn("network 29497", (ROOT / "container/start.sh").read_text())
-        self.assertEqual(manifest["build"], 3)
+        self.assertEqual(manifest["build"], 4)
         self.assertEqual(json.loads((ROOT / "dsm-package.yaml").read_text()), manifest)
+
+    def test_retained_volume_resynchronizes_and_bootstraps_under_base_url(self):
+        base = "/synopkgland/SynoPkgJellyfin"
+        with tempfile.TemporaryDirectory() as d:
+            state = pathlib.Path(d)
+            (state / "config/config").mkdir(parents=True)
+            (state / "bootstrap.complete").touch()
+            (state / "bootstrap.secret").write_text("a" * 64)
+            # Same credentials and issuer, but the pre-migration fingerprint.
+            (state / "oidc.fingerprint").write_text(hashlib.sha256(("b" * 64 + ":29490").encode()).hexdigest())
+            (state / "hwa.sh").write_text("hwa_setup() { :; }\n")
+            for name in ["provider.json", "branding.json", "library.json"]:
+                (state / name).write_text("{}")
+            binary = state / "bin"
+            binary.mkdir()
+            curl = binary / "curl"
+            curl.write_text('''#!/bin/sh
+for url; do :; done
+printf '%s\\n' "$url" >> "$REQUEST_LOG"
+case "$url" in
+  */health) printf Healthy;;
+  */System/Info/Public) printf '{"StartupWizardCompleted":true}';;
+  */Users/AuthenticateByName) printf '{"AccessToken":"abcdef"}';;
+  */Library/VirtualFolders) printf '[{"Name":"Media"}]';;
+esac
+''')
+            curl.chmod(0o755)
+            server = binary / "jellyfin"
+            server.write_text('''#!/bin/sh
+if grep -q '<InternalHttpPort>29497</InternalHttpPort>' "$STATE/config/config/network.xml"; then
+    exec sleep 30
+fi
+''')
+            server.chmod(0o755)
+            script = (ROOT / "container/start.sh").read_text().replace("state=/var/tmp/jellyfin", f"state={state}").replace("/jellyfin/jellyfin", str(server))
+            env = dict(os.environ, PATH=str(binary) + ":" + os.environ["PATH"], STATE=str(state), REQUEST_LOG=str(state / "requests"), JELLYFIN_BASE_URL=base, JELLYFIN_BIND="127.0.0.1", OIDC_SECRET="b" * 64, BOOTSTRAP_PASSWORD="a" * 64, OIDC_ISSUER_PORT="29490", SYNOPKGLAND_STARTUP_BUDGET_SECONDS="60")
+            subprocess.run(["sh", "-c", script], env=env, check=True, capture_output=True, timeout=10)
+            urls = (state / "requests").read_text().splitlines()
+            self.assertTrue(urls)
+            self.assertTrue(all(url.startswith("http://127.0.0.1:29497" + base + "/") for url in urls), urls)
+            self.assertIn("http://127.0.0.1:29497" + base + "/sso/OID/Add/dsm", urls)
+            self.assertIn("http://127.0.0.1:29497" + base + "/System/Configuration/Branding", urls)
+            self.assertIn("<BaseUrl>" + base + "</BaseUrl>", (state / "config/config/network.xml").read_text())
+            self.assertIn("<InternalHttpPort>29496</InternalHttpPort>", (state / "config/config/network.xml").read_text())
+            expected = hashlib.sha256(("b" * 64 + ":29490:" + base).encode()).hexdigest()
+            self.assertEqual((state / "oidc.fingerprint").read_text(), expected)
+            (state / "requests").unlink()
+            subprocess.run(["sh", "-c", script], env=env, check=True, capture_output=True, timeout=10)
+            self.assertFalse((state / "requests").exists(), "Unchanged configuration must skip bootstrap")
 
     def renderer(self):
         spec = importlib.util.spec_from_file_location(

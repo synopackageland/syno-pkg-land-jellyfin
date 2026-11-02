@@ -32,12 +32,15 @@ case "$BOOTSTRAP_PASSWORD" in *[!0-9a-f]*) exit 1;; esac
 [ "${#BOOTSTRAP_PASSWORD}" -eq 64 ] || exit 1
 case "${OIDC_ISSUER_PORT:?}" in ''|*[!0-9]*) exit 1;; esac
 [ "$OIDC_ISSUER_PORT" -ge 1024 ] && [ "$OIDC_ISSUER_PORT" -le 65535 ] || exit 1
-oidc_fingerprint=$(printf '%s:%s' "$OIDC_SECRET" "$OIDC_ISSUER_PORT" | sha256sum | cut -d ' ' -f 1)
+base_url=${JELLYFIN_BASE_URL:?}
+[ "$base_url" = /synopkgland/SynoPkgJellyfin ] || exit 1
+# A retained volume must refresh branding and provider settings after migration.
+oidc_fingerprint=$(printf '%s:%s:%s' "$OIDC_SECRET" "$OIDC_ISSUER_PORT" "$base_url" | sha256sum | cut -d ' ' -f 1)
 budget=${SYNOPKGLAND_STARTUP_BUDGET_SECONDS:?}
 case "$budget" in ''|*[!0-9]*) exit 1;; esac
 deadline=$(($(date +%s)+budget))
 network() {
-    printf '<?xml version="1.0"?><NetworkConfiguration><InternalHttpPort>%s</InternalHttpPort><EnableHttps>false</EnableHttps><EnableIPv4>true</EnableIPv4><EnableIPv6>false</EnableIPv6><AutoDiscovery>false</AutoDiscovery><EnableUPnP>false</EnableUPnP><LocalNetworkAddresses><string>%s</string></LocalNetworkAddresses><KnownProxies><string>127.0.0.1</string></KnownProxies></NetworkConfiguration>\n' "$1" "$JELLYFIN_BIND" > "$state/config/config/network.xml"
+    printf '<?xml version="1.0"?><NetworkConfiguration><BaseUrl>%s</BaseUrl><InternalHttpPort>%s</InternalHttpPort><EnableHttps>false</EnableHttps><EnableIPv4>true</EnableIPv4><EnableIPv6>false</EnableIPv6><AutoDiscovery>false</AutoDiscovery><EnableUPnP>false</EnableUPnP><LocalNetworkAddresses><string>%s</string></LocalNetworkAddresses><KnownProxies><string>127.0.0.1</string></KnownProxies></NetworkConfiguration>\n' "$base_url" "$1" "$JELLYFIN_BIND" > "$state/config/config/network.xml"
 }
 cleanup_secrets() { rm -f "$state/auth.json" "$state/curl-auth.conf" "$state/provider-live.json" "$state/library-list.json"; }
 trap cleanup_secrets EXIT
@@ -48,12 +51,12 @@ if [ ! -f "$state/bootstrap.complete" ] || [ "$(cat "$state/oidc.fingerprint" 2>
     network 29497
     /jellyfin/jellyfin &
     server=$!
-    until [ "$(curl -fsS --max-time 30 http://127.0.0.1:29497/health 2>/dev/null || true)" = Healthy ]; do
+    until [ "$(curl -fsS --max-time 30 "http://127.0.0.1:29497$base_url/health" 2>/dev/null || true)" = Healthy ]; do
         kill -0 "$server" 2>/dev/null || { echo 'Bootstrap server failed' >&2; exit 1; }
         [ "$(date +%s)" -lt "$deadline" ] || { stop; echo 'Bootstrap deadline exceeded' >&2; exit 1; }
         sleep 1
     done
-    api=http://127.0.0.1:29497
+    api=http://127.0.0.1:29497$base_url
     info=$(curl -fsS --max-time 30 "$api/System/Info/Public")
     if ! printf '%s' "$info" | grep -iq '"StartupWizardCompleted"[[:space:]]*:[[:space:]]*true'; then
         curl -fsS --max-time 30 "$api/Startup/User" >/dev/null
@@ -86,13 +89,13 @@ if [ -f "$state/bootstrap.complete" ]; then
 fi
 /jellyfin/jellyfin &
 server=$!
-until [ "$(curl -fsS --max-time 30 http://127.0.0.1:29496/health 2>/dev/null || true)" = Healthy ]; do
+until [ "$(curl -fsS --max-time 30 "http://127.0.0.1:29496$base_url/health" 2>/dev/null || true)" = Healthy ]; do
     kill -0 "$server" 2>/dev/null || { cleanup_secrets; exit 1; }
     [ "$(date +%s)" -lt "$deadline" ] || { stop; exit 1; }
     sleep 1
 done
 # A refresh is asynchronous: request it from the final process, which remains alive.
-curl -fsS --max-time 30 -K "$state/curl-auth.conf" -X POST http://127.0.0.1:29496/Library/Refresh >/dev/null
+curl -fsS --max-time 30 -K "$state/curl-auth.conf" -X POST "http://127.0.0.1:29496$base_url/Library/Refresh" >/dev/null
 cleanup_secrets
 : > "$state/bootstrap.complete"
 wait "$server"
