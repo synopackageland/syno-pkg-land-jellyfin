@@ -2,8 +2,8 @@
 
 ## Current package
 
-Version **12.4-0004** pins SDK/App **0.43.1**, templates **0.38.0**,
-CLI **0.43.0** and executor **v0.39.0**. Validation and device acceptance
+Version **12.4-0005** pins SDK/App **0.46.1**, templates **0.38.0**,
+CLI **0.47.1** and executor **v0.39.0**. Validation and device acceptance
 are recorded in [validation](docs/validation.md).
 Protected executors require
 administrator approval after upgrading. Device and mobile-client acceptance
@@ -45,7 +45,7 @@ unverified on a deployed package. DSM logout does not revoke upstream tokens.
 
 This wrapper uses the unmodified official Jellyfin 12.4 image, the unmodified
 SSO Authentication 4.0.0.4 plugin, and the embedded SDK OIDC provider.
-The rebuild target is `SynoPkgJellyfin` / `12.4-0004` / x86_64.
+The rebuild target is `SynoPkgJellyfin` / `12.4-0005` / x86_64.
 
 The native install wizard defaults to the dedicated `Jellyfin` Shared Folder
 for `/media`, mounted read-only. DSM creates the share and grants the package
@@ -209,3 +209,5 @@ do not certify other GPUs or codecs.
 ## Official package icon
 
 The DSM package uses the official project artwork, preserved unchanged and only resized/rasterized to the required icon sizes. See [assets/icon-source.json](assets/icon-source.json) for the source revision and original SHA-256, and [NOTICE](NOTICE) for attribution and the applicable image license. The package ID remains `SynoPkgJellyfin` for upgrade continuity.
+
+Current release checks and acceptance boundaries: [shared-folder release](shared-folder-release.json).

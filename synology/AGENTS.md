@@ -10,8 +10,8 @@ shared administrator account. Runtime must remain the package UID without root
 or added capabilities.
 
 The native wizard defaults to the dedicated Jellyfin share, mounted read-only.
-DSM manages its package-account grant. Optional existing shares must pass the
-SDK access validation; do not infer access from the selected path.
+DSM manages its package-account grant. Optional existing shares are validated for supported local folder types; DSM
+data-share grants the declared package-account access without a pre-existing grant.
 
 Dependency pins stay at released versions. Development source overrides must
 identify exact reviewed SDK/CLI commits and must never be published as a release.

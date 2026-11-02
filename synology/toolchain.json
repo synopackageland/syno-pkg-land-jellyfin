@@ -1,8 +1,8 @@
 {
-  "cli": "0.43.0",
+  "cli": "0.47.1",
   "templates": "0.38.0",
-  "sdk": "0.43.1",
-  "app": "0.43.1",
+  "sdk": "0.46.1",
+  "app": "0.46.1",
   "ui": "0.19.2",
   "executorTag": "executor/v0.39.0",
   "goToolchain": "go1.26.10"
