@@ -49,7 +49,8 @@ The rebuild target is `SynoPkgJellyfin` / `12.4-0005` / x86_64.
 
 The native install wizard defaults to the dedicated `Jellyfin` Shared Folder
 for `/media`, mounted read-only. DSM creates the share and grants the package
-account read access. An existing share must pass the SDK access validation.
+account read access. Selecting an existing supported share lets DSM grant the same read-only
+access without a prior package-account grant.
 Shared media remains after uninstall.
 Configuration and cache use private named volumes. Intel GPU support uses the
 SDK capability described below; DLNA is not enabled.
