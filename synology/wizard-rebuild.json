@@ -1,0 +1,46 @@
+{
+  "package": "SynoPkgJellyfin",
+  "previousVersion": "12.4-0005",
+  "version": "12.4-0006",
+  "cli": "0.47.4",
+  "sdk": "0.46.1",
+  "sdkChanged": false,
+  "uiChanged": false,
+  "templates": "0.38.0",
+  "architectures": [
+    "x86_64"
+  ],
+  "artifacts": [
+    {
+      "name": "SynoPkgJellyfin-12.4-0006-x86_64.spk",
+      "sha256": "01b29ae731c4ba6f7c4464bbe62f0f8890faa76e0c55a92564f872518db4b741",
+      "size": 39969280
+    }
+  ],
+  "validation": {
+    "check": "passed",
+    "build": "passed",
+    "inspect": {
+      "passed": true,
+      "findings": [],
+      "dsmOk": true
+    },
+    "publicScan": {
+      "status": "passed",
+      "scope": [
+        "synology/",
+        "decoded SPK members"
+      ],
+      "externalDenylist": true,
+      "npmRegistry": "https://registry.npmjs.org/"
+    },
+    "tests": "not run as requested",
+    "nasInstalls": "not run",
+    "liveChecks": "not run"
+  },
+  "approvalRetention": {
+    "status": "unknown",
+    "baselineInspectCode": "APPROVAL_BASELINE_INVALID",
+    "reason": "Previous released SPK was rejected by the current inspector for its legacy install_uifile declaration; no runtime approval retention is claimed"
+  }
+}
