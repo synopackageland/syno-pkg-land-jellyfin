@@ -1,0 +1,41 @@
+{
+  "version": "12.4-0005",
+  "toolchain": {
+    "cli": "0.47.1",
+    "templates": "0.38.0",
+    "sdk": "0.46.1",
+    "app": "0.46.1",
+    "ui": "0.19.2",
+    "executorTag": "executor/v0.39.0",
+    "goToolchain": "go1.26.10"
+  },
+  "checks": {
+    "unit_tests": true,
+    "build": true,
+    "inspect": true
+  },
+  "artifact": {
+    "file": "SynoPkgJellyfin-12.4-0005-x86_64.spk",
+    "sha256": "87407cbbb39951d0e44afd4b2c3a42dfb07a69664ff748dd11fc51d4a579a289",
+    "md5": "778fa51dc34efe1fddf2bdf434f0424d",
+    "size": 39928832,
+    "inspect_findings": [],
+    "dsm_errors": [],
+    "public_scan": {
+      "source_files": 52,
+      "spk_files": 117,
+      "findings": []
+    }
+  },
+  "validation_scope": "Dependency bump; upstream sources/images and entry policy unchanged. Scoped source/SPK scan only.",
+  "webapi_upgrade": {
+    "package": "SynoPkgJellyfin",
+    "from": "12.4-0004",
+    "to": "12.4-0005",
+    "status": "running",
+    "webapi": true,
+    "error_4541": false,
+    "steps_succeeded": 2
+  },
+  "device_acceptance": "WebAPI upgrade only; no full lifecycle or browser regression suite"
+}

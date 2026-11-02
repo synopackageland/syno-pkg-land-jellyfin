@@ -2,7 +2,7 @@
   "schema": 2,
   "package": "SynoPkgJellyfin",
   "version": "12.4",
-  "build": 4,
+  "build": 5,
   "displayname": "Jellyfin",
   "icon": "assets/icon.png",
   "description": "Organize and stream your movies, TV shows and music",
@@ -37,7 +37,7 @@
     }
   },
   "compose": {
-    "sdk": "0.43.1",
+    "sdk": "0.46.1",
     "files": [
       "compose.yaml"
     ],
@@ -124,7 +124,7 @@
     }
   },
   "identity_gateway": {
-    "sdk": "0.43.1",
+    "sdk": "0.46.1",
     "mode": "oidc",
     "access": "dsm-users",
     "upstream_auth_paths": [
