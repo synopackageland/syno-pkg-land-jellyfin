@@ -67,6 +67,7 @@ func TestEntryContract(t *testing.T) {
 			t.Fatal("packaged policy differs from the manifest contract")
 		}
 	}
+	const basePath = "/synopkgland/SynoPkgJellyfin"
 	var hits atomic.Int64
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		hits.Add(1)
@@ -80,7 +81,7 @@ func TestEntryContract(t *testing.T) {
 	}))
 	defer upstream.Close()
 	frontConfig := gateway.FrontConfig{
-		Package: manifest.Package, Entry: manifest.Entry, Mode: cfg.Mode, Access: cfg.Access,
+		IngressPath: basePath + "/", Package: manifest.Package, Entry: manifest.Entry, Mode: cfg.Mode, Access: cfg.Access,
 		UpstreamAuthPaths: cfg.UpstreamAuthPaths, Upstream: upstream.URL,
 		Key:      bytes.Repeat([]byte{42}, 32),
 		Accounts: fixtureDirectory{}, Membership: fixtureDirectory{},
@@ -94,7 +95,7 @@ func TestEntryContract(t *testing.T) {
 		}
 		frontConfig.Issuer = "http://127.0.0.1:18090"
 		frontConfig.Provider, err = gateway.NewProvider(frontConfig.Issuer, "example.invalid", key,
-			[]gateway.Client{{ID: "fixture", SecretSHA256: bytes.Repeat([]byte{42}, 32), RedirectPaths: []string{"/callback"}}}, time.Now)
+			[]gateway.Client{{ID: "fixture", SecretSHA256: bytes.Repeat([]byte{42}, 32), RedirectPaths: []string{basePath + "/callback"}}}, time.Now)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -105,7 +106,7 @@ func TestEntryContract(t *testing.T) {
 	}
 	request := func(method, path string, browser bool) *httptest.ResponseRecorder {
 		t.Helper()
-		r := httptest.NewRequest(method, "https://app.example"+path, nil)
+		r := httptest.NewRequest(method, "https://app.example"+basePath+path, nil)
 		r.RemoteAddr = "203.0.113.7:4444"
 		r.Header.Set("Accept", "application/json")
 		r.Header.Set("Authorization", "Bearer fixture")

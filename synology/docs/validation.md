@@ -1,5 +1,32 @@
 # Validation scope
 
+## 12.4-0004 DSM path ingress migration
+
+The gateway declares `/synopkgland/SynoPkgJellyfin/` on the DSM origin with
+OIDC, dsm-users admission and App privilege unchanged. The official image,
+plugin hash and native authentication exceptions are retained. The native
+BaseUrl, bootstrap API, login branding and health probes share the prefix;
+gateway callback declarations remain relative. Only the loopback OIDC issuer
+remains in the install-port wizard. Startup health allows a 180-second warmup.
+Pins are CLI 0.43.0, SDK/App 0.43.1, templates 0.38.0 and executor v0.39.0.
+The build host and CLI both use Go 1.26.10.
+
+Five runtime tests, five hardware-adapter tests and three version tests pass.
+The retained-volume regression proves base-path changes resynchronize native
+login configuration, every bootstrap API request stays under the prefix, and
+unchanged subsequent starts skip bootstrap. The existing browser suite loads
+with prefixed routes and retains distinct identity, role, media and logout
+assertions. Loading the suite is not browser acceptance.
+
+Release dependency blocker: npm SDK 0.43.1 is published, but its Go module tag
+v0.43.1 is not discoverable. Go entry tests, CLI check and build fail while
+resolving that module. No source override or downgrade is included. A candidate
+SPK and inspect result are unavailable, and the installed package remains at
+12.4-0003. Device authentication, assets, API, WebSocket, playback, removal of
+the old listener and post-upgrade data retention remain pending for this build.
+A scoped tracked-wrapper privacy scan reports no findings; SPK scanning awaits
+a successful build.
+
 ## 12.4-0003 CLI 0.42.2 rebuild
 
 This build retains the upstream Jellyfin 12.4 image digest and SSO Authentication

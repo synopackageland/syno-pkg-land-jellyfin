@@ -1,5 +1,12 @@
 # Changelog
 
+## 12.4-0004
+
+- Serve Jellyfin through the fixed DSM path `/synopkgland/SynoPkgJellyfin/`
+- Configure the native BaseUrl, bootstrap API, login branding and health probes consistently
+- Preserve OIDC, DSM App privilege, native authentication exceptions and retained data
+- Pin CLI 0.43.0, SDK/App 0.43.1, templates 0.38.0 and executor v0.39.0
+
 ## 12.4-0003
 
 - Rebuild unchanged Jellyfin 12.4 with CLI 0.42.2 and SDK/App 0.42.0

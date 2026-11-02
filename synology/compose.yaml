@@ -39,6 +39,7 @@
         "eyJjYXRlZ29yeSI6ICJBdXRoZW50aWNhdGlvbiIsICJjaGFuZ2Vsb2ciOiAiNC4wLjAuNDogRml4IHNlY3VyaXR5IGlzc3VlIGluIFNBTUxcbjQuMC4wLjA6IEplbGx5ZmluIDEwLjExXG4zLjUuMy4wOiBBbGxvdyBmb3IgT0lELXByb3ZpZGVkIGF2YXRhcnMsIHZhcmlvdXMgYnVnZml4ZXMgYW5kIHdvcmthcm91bmRzXG4zLjUuMi40OiBVcGRhdGVzIGZvciBKZWxseWZpbiAxMC45XG4zLjUuMi4zOiBJbXByb3ZlIE9wZW5JRCBkaXNjb3ZlcnkgcG9saWN5IHNlY3VyaXR5IHJ1bGVzLCBmaXggaU9TIGxvZ2luIGJ1Z3MgcmVsYXRlZCB0byBjYWNoZVxuMy41LjIuMjogRml4IGxpbmtpbmcgcGFnZSB3aGVuIHVzaW5nIG5ldyBwYXRoc1xuMy41LjIuMTogSG90Zml4IGZvciBTQU1MIG51bGwgY2hlY2tzXG4zLjUuMi4wOiBBbGxvdyBvdmVycmlkaW5nIHRoZSBzY2hlbWUgdXNlZCBmb3IgZ2VuZXJhdGluZyBVUkxzLlxuMy41LjEuMTogQ2hhbmdlIGlmcmFtZSBVUkwgdG8gcG9pbnQgdG8gdGhlIHdlYiBVSSBpbnN0ZWFkIG9mIHRoZSByb290IFxuMy41LjEuMDogSW1wcm92ZWQgcGF0aHMhIE5vIG1vcmUgb2JzY3VyZSBcInBcIiB2ZXJzdXMgXCJyXCIgVVJMcyEgSW1wcm92ZSBmaW5hbCByZWRpcmVjdCBmb3IgYXV0b21hdGljIGF1dGhlbnRpY2F0aW9uLiBBZGQgbW9yZSBjb25maWd1cmF0aW9uIG9wdGlvbnMgZm9yIE9wZW5JRCBkaXNjb3ZlcnkuXG4zLjUuMC4wOiBBZGQgc3VwcG9ydCBmb3IgTGl2ZSBUViBhdXRoZW50aWNhdGlvbi4gRml4IHZhcmlvdXMgbnVsbCBwb2ludGVyIGJ1Z3MuXG4zLjQuMC4wOiBBZGQgdXNlciBzZWxmLXNlcnZpY2UgZm9yIGxpbmtpbmcgZXhpc3RpbmcgYWNjb3VudHMgKyBtYW5hZ2luZyBleGlzdGluZyBsaW5rcy4gQWxsb3cgSURQIGFjY291bnRzIHRvIGJlIGxpbmtlZCB0byBqZWxseWZpbiBhY2NvdW50cyB3aXRoIGEgZGlmZmVyZW50IGRpc3BsYXktbmFtZS5cbjMuMy4wLjA6IEFkZCBmYWxsYmFjayBhdXRoZW50aWNhdGlvbiBwcm92aWRlci4gQWRkIE9wZW5JRCBhZG1pbiBwYWdlLlxuMy4yLjAuMDogU3dpdGNoIHRvIGhhc2htYXBzIChCUkVBS0lORykgZm9yIHBlcmZvcm1hbmNlLiBEdW1wIGV4cGVjdGVkIHBlcm1pc3Npb25zIGluIGxvZ3Mgb24gZXJyb3IuXG4zLjEuMC4xOiBGaXggcmVkaXJlY3QgYnVnIGluIFdlYlJlc3BvbnNlICgjNylcbjMuMS4wLjA6IFNpbXBsaWZ5IGF1dGggZmxvdyBzbyBsb2FkaW5nIHRoZSB3ZWIgVUkgaXMgbm90IHJlcXVpcmVkXG4zLjAuMC4wOiBBZGQgbW9yZSBSQkFDIGZlYXR1cmVzIGFuZCBvcHRpb24gdG8gdW5yZWdpc3RlciB1c2VyIGZyb20gU1NPXG4yLjAuMS4wOiBGaXggaW1wcm9wZXIgYXJ0aWZhY3QgbG9hZGluZ1xuMi4wLjAuMDogQWRkIFJCQUMgYW5kIEdvb2dsZSBzdXBwb3J0XG4xLjAuMC4wOiBJbml0aWFsIFJlbGVhc2VcbiIsICJkZXNjcmlwdGlvbiI6ICJUaGlzIHBsdWdpbiBhbGxvd3MgdXNlcnMgdG8gc2lnbiBpbiB0aHJvdWdoIGFuIFNTTyBwcm92aWRlciAoc3VjaCBhcyBHb29nbGUsIEZhY2Vib29rLCBvciB5b3VyIG93biBwcm92aWRlcikuIFRoaXMgZW5hYmxlcyBvbmUtY2xpY2sgc2lnbmluLlxuUmV2aWV3IGRvY3VtZW50YXRpb24gYXQgaHR0cHM6Ly9naXRodWIuY29tLzlwNC9qZWxseWZpbi1wbHVnaW4tc3NvXG4iLCAiZ3VpZCI6ICI1MDVjZTlkMS1kOTE2LTQyZmEtODZjYS02NzNlZjI0MWQ3ZGYiLCAiaW1hZ2VVcmwiOiAiaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tLzlwNC9qZWxseWZpbi1wbHVnaW4tc3NvL21haW4vaW1nL2xvZ28ucG5nIiwgIm5hbWUiOiAiU1NPIEF1dGhlbnRpY2F0aW9uIiwgIm92ZXJ2aWV3IjogIkF1dGhlbnRpY2F0ZSB1c2VycyBhZ2FpbnN0IGFuIFNTTyBwcm92aWRlci4iLCAib3duZXIiOiAiOXA0IiwgInRhcmdldEFiaSI6ICIxMC4xMS4wLjAiLCAidGltZXN0YW1wIjogIjIwMjYtMDMtMjBUMDM6MTM6NTlaIiwgInZlcnNpb24iOiAiNC4wLjAuNCIsICJhdXRvVXBkYXRlIjogZmFsc2V9"
       ],
       "environment": {
+        "JELLYFIN_BASE_URL": "/synopkgland/SynoPkgJellyfin",
         "JELLYFIN_DATA_DIR": "/var/tmp/jellyfin/config",
         "JELLYFIN_CONFIG_DIR": "/var/tmp/jellyfin/config/config",
         "JELLYFIN_CACHE_DIR": "/var/tmp/jellyfin/cache",
@@ -57,8 +58,10 @@
       "healthcheck": {
         "test": [
           "CMD-SHELL",
-          "test \"$(curl -fsS http://127.0.0.1:29496/health)\" = Healthy"
-        ]
+          "test \"$(curl -fsS --max-time 30 http://127.0.0.1:29496/synopkgland/SynoPkgJellyfin/health)\" = Healthy"
+        ],
+        "start_period": "180s",
+        "timeout": "35s"
       },
       "stop_grace_period": "30s"
     }

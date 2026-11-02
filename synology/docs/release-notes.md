@@ -1,5 +1,11 @@
 # Release notes
 
+## 12.4-0004
+
+Open Jellyfin at `/synopkgland/SynoPkgJellyfin/` on the DSM HTTPS origin
+The public gateway port is removed; only the loopback OIDC issuer remains configurable
+The official image, SSO plugin, DSM App privilege and native user data are retained
+
 ## 12.4-0003
 
 Rebuild unchanged upstream Jellyfin 12.4 with published CLI 0.42.2, SDK/App

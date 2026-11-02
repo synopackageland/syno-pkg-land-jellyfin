@@ -4,6 +4,8 @@ import {dsmPage,openDesktop,registerDsmSecrets} from '@synopackageland/cli/e2e';
 import {readFile,writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 
+const basePath = '/synopkgland/SynoPkgJellyfin';
+
 for(const [session,admin] of [['admin',true],['user',false]] as const){
  test(`DSM menu and one-click SSO create the native ${session} session`,
   {session,timeout:150_000},async({app})=>{
@@ -25,17 +27,17 @@ for(const [session,admin] of [['admin',true],['user',false]] as const){
    }
    await page.getByRole('button',{name:'Sign in with DSM',exact:true}).click({timeout:45_000});
    console.log('Native SSO requested');
-   await page.waitForFunction(()=>{
+   await page.waitForFunction(base=>{
     const raw=localStorage.getItem('jellyfin_credentials');
-    return location.pathname.startsWith('/web/') && Boolean((window as any).ApiClient?.getCurrentUserId?.()) && raw && JSON.parse(raw).Servers?.[0]?.AccessToken;
-   },undefined,{timeout:45_000});
+    return location.pathname.startsWith(base+'/web/') && Boolean((window as any).ApiClient?.getCurrentUserId?.()) && raw && JSON.parse(raw).Servers?.[0]?.AccessToken;
+   },basePath,{timeout:45_000});
    console.log('Native token established');
-   const user=await page.evaluate(async()=>{
+   const user=await page.evaluate(async base=>{
     const server=JSON.parse(localStorage.getItem('jellyfin_credentials')!).Servers[0];
-    const response=await fetch('/Users/Me',{headers:{Authorization:`MediaBrowser Token=${server.AccessToken}`}});
+    const response=await fetch(base+'/Users/Me',{headers:{Authorization:`MediaBrowser Token=${server.AccessToken}`}});
     if(!response.ok)throw new Error(`Native user read failed: ${response.status}`);
     const u=await response.json();return {id:u.Id,subject:u.Name,admin:u.Policy?.IsAdministrator};
-   });
+   },basePath);
    expect(/^\d+$/.test(user.subject),'JIT uses signed sub/UID as the native username').toBe(true);
    expect(user.admin).toBe(admin);
    if(!admin){
@@ -44,24 +46,24 @@ for(const [session,admin] of [['admin',true],['user',false]] as const){
    }
    await writeFile(join(process.env.DSM_E2E_OUTPUT_DIR!,`identity-${session}.json`),JSON.stringify(user)+'\n',{mode:0o600});
    console.log('Native user verified');
-   await page.waitForFunction(()=>location.pathname.startsWith('/web/'));
+   await page.waitForFunction(base=>location.pathname.startsWith(base+'/web/'),basePath);
    console.log('Native web route reached');
    await page.getByRole('button',{name:'User Menu',exact:true}).waitFor({timeout:30_000});
    await page.screenshot({path:join(process.env.DSM_E2E_OUTPUT_DIR!,`menu-${session}.png`)});
    console.log('Native home rendered');
-   const media=await page.evaluate(async()=>{
+   const media=await page.evaluate(async ({base,fixture})=>{
     const server=JSON.parse(localStorage.getItem('jellyfin_credentials')!).Servers[0];
     const headers={Authorization:`MediaBrowser Token=${server.AccessToken}`};
-    const response=await fetch(`/Users/${server.UserId}/Items?Recursive=true&IncludeItemTypes=Movie`,{headers});
+    const response=await fetch(`${base}/Users/${server.UserId}/Items?Recursive=true&IncludeItemTypes=Movie`,{headers});
     const items=await response.json();let item;
-    for(const candidate of items.Items ?? [])if(candidate.Name==='SSO Fixture')item=candidate;
+    for(const candidate of items.Items ?? [])if(candidate.Name===fixture)item=candidate;
     if(!item)throw new Error('The selected read-only media fixture was not indexed');
-    const stream=await fetch(`/Videos/${item.Id}/stream?static=true`,{headers:{...headers,Range:'bytes=0-4095'}});
+    const stream=await fetch(`${base}/Videos/${item.Id}/stream?static=true`,{headers:{...headers,Range:'bytes=0-4095'}});
     const bytes=new Uint8Array(await stream.arrayBuffer());
-    const transcode=await fetch(`/Videos/${item.Id}/stream.mp4?static=false&VideoCodec=h264&AudioCodec=aac&VideoBitRate=150000&AudioBitRate=64000&MaxWidth=160&MaxHeight=90&TranscodingMaxAudioChannels=2`,{headers});
+    const transcode=await fetch(`${base}/Videos/${item.Id}/stream.mp4?static=false&VideoCodec=h264&AudioCodec=aac&VideoBitRate=150000&AudioBitRate=64000&MaxWidth=160&MaxHeight=90&TranscodingMaxAudioChannels=2`,{headers});
     const encoded=new Uint8Array(await transcode.arrayBuffer());
     return {status:stream.status,bytes:bytes.length,mp4:String.fromCharCode(...bytes.slice(4,8)),transcodeStatus:transcode.status,transcodeBytes:encoded.length,transcodeMp4:String.fromCharCode(...encoded.slice(4,8))};
-   });
+   },{base:basePath,fixture:process.env.JELLYFIN_E2E_MEDIA_NAME ?? 'SSO Fixture'});
    expect(media.status).toBe(206);expect(media.bytes).toBe(4096);expect(media.mp4).toBe('ftyp');
    expect(media.transcodeStatus).toBe(200);expect(media.transcodeBytes).toBeGreaterThan(0);expect(media.transcodeMp4).toBe('ftyp');
    await page.getByRole('button',{name:'User Menu',exact:true}).click();
@@ -74,10 +76,10 @@ for(const [session,admin] of [['admin',true],['user',false]] as const){
     desktop.getByRole('menuitem',{name:'Jellyfin',exact:true}).click(),
    ]);
    await page.getByRole('button',{name:'Sign in with DSM',exact:true}).click({timeout:30_000});
-   await page.waitForFunction(id=>{
+   await page.waitForFunction(({id,base})=>{
     const raw=localStorage.getItem('jellyfin_credentials');
-    return location.pathname.startsWith('/web/') && Boolean((window as any).ApiClient?.getCurrentUserId?.()) && raw && JSON.parse(raw).Servers?.[0]?.UserId===id && JSON.parse(raw).Servers?.[0]?.AccessToken;
-   },user.id,{timeout:45_000});
+    return location.pathname.startsWith(base+'/web/') && Boolean((window as any).ApiClient?.getCurrentUserId?.()) && raw && JSON.parse(raw).Servers?.[0]?.UserId===id && JSON.parse(raw).Servers?.[0]?.AccessToken;
+   },{id:user.id,base:basePath},{timeout:45_000});
    await page.close();
  });
 }
@@ -85,7 +87,7 @@ test('requests without a DSM session are refused',{session:'admin'},async({app})
  await openDesktop(app);const page=dsmPage();
  const context=await page.context().browser()!.newContext({ignoreHTTPSErrors:true});
  try{
-  const response=await context.request.get(new URL('/Users/Me',process.env.JELLYFIN_E2E_URL!).href,{maxRedirects:0});
+  const response=await context.request.get(new URL(basePath+'/Users/Me',process.env.JELLYFIN_E2E_URL!).href,{maxRedirects:0});
   expect(response.status()).toBe(401);
  }finally{await context.close();}
 });
