@@ -13,7 +13,7 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(manifest["compose"]["web"]["port"], 29496)
         self.assertEqual(manifest["compose"]["web"]["health"]["path"], "/synopkgland/SynoPkgJellyfin/System/Ping")
         self.assertIn("network 29497", (ROOT / "container/start.sh").read_text())
-        self.assertEqual(manifest["build"], 5)
+        self.assertEqual(manifest["build"], json.loads((ROOT / "upstream-source.json").read_text())["build"])
         self.assertEqual(json.loads((ROOT / "dsm-package.yaml").read_text()), manifest)
 
     def test_retained_volume_resynchronizes_and_bootstraps_under_base_url(self):
