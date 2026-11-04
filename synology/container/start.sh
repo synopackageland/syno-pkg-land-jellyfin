@@ -35,7 +35,9 @@ case "${OIDC_ISSUER_PORT:?}" in ''|*[!0-9]*) exit 1;; esac
 base_url=${JELLYFIN_BASE_URL:?}
 [ "$base_url" = /synopkgland/SynoPkgJellyfin ] || exit 1
 # A retained volume must refresh branding and provider settings after migration.
-oidc_fingerprint=$(printf '%s:%s:%s' "$OIDC_SECRET" "$OIDC_ISSUER_PORT" "$base_url" | sha256sum | cut -d ' ' -f 1)
+# Include the provider declaration so upgrades also remove obsolete overrides.
+provider_hash=$(sha256sum "$state/provider.json" | cut -d ' ' -f 1)
+oidc_fingerprint=$(printf '%s:%s:%s:%s' "$OIDC_SECRET" "$OIDC_ISSUER_PORT" "$base_url" "$provider_hash" | sha256sum | cut -d ' ' -f 1)
 budget=${SYNOPKGLAND_STARTUP_BUDGET_SECONDS:?}
 case "$budget" in ''|*[!0-9]*) exit 1;; esac
 deadline=$(($(date +%s)+budget))

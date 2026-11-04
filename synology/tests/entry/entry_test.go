@@ -69,6 +69,7 @@ func TestEntryContract(t *testing.T) {
 	}
 	const basePath = "/synopkgland/SynoPkgJellyfin"
 	var hits atomic.Int64
+	schemeHeaders := make(chan http.Header, 1)
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		hits.Add(1)
 		if r.Header.Get("Authorization") != "Bearer fixture" || r.Header.Get("Cookie") != "native=fixture" {
@@ -76,6 +77,9 @@ func TestEntryContract(t *testing.T) {
 		}
 		if r.Header.Get("Remote-User") != "" || r.Header.Get("X-Syno-User") != "" {
 			t.Error("trusted identity leaked to upstream-auth path")
+		}
+		if r.URL.Query().Get("schemeProbe") == "1" {
+			schemeHeaders <- r.Header.Clone()
 		}
 		w.WriteHeader(http.StatusNoContent)
 	}))
@@ -103,6 +107,28 @@ func TestEntryContract(t *testing.T) {
 	front, err := gateway.NewFront(frontConfig)
 	if err != nil {
 		t.Fatal(err)
+	}
+	for _, scheme := range []string{"http", "https", "http"} {
+		r := httptest.NewRequest("GET", scheme+"://app.example"+basePath+"/System/Ping?schemeProbe=1", nil)
+		r.RemoteAddr = "203.0.113.7:4444"
+		r.Header.Set("Authorization", "Bearer fixture")
+		r.Header.Set("Cookie", "native=fixture")
+		r.Header.Set("X-Forwarded-Proto", "forged")
+		r.Header.Set("X-Forwarded-Host", "forged.invalid")
+		r.Header.Set("X-Forwarded-Port", "65535")
+		w := httptest.NewRecorder()
+		front.ServeHTTP(w, r)
+		if w.Code != http.StatusNoContent {
+			t.Fatalf("%s scheme probe: %d", scheme, w.Code)
+		}
+		headers := <-schemeHeaders
+		port := "80"
+		if scheme == "https" {
+			port = "443"
+		}
+		if headers.Get("X-Forwarded-Proto") != scheme || headers.Get("X-Forwarded-Host") != "app.example" || headers.Get("X-Forwarded-Port") != port {
+			t.Fatalf("gateway did not preserve the %s request origin", scheme)
+		}
 	}
 	request := func(method, path string, browser bool) *httptest.ResponseRecorder {
 		t.Helper()
