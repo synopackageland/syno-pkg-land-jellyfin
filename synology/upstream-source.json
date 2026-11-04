@@ -1,14 +1,14 @@
 {
   "tag": "v12.4",
   "commit": "83d0d0e7f76e23e2e085c8ff67d28b772d35967d",
-  "build": 7,
+  "build": 8,
   "changelog": {
-    "en": "Update DSM sign-in redirects and localized gateway error pages",
-    "zh-TW": "更新 DSM 登入導向與在地化閘道錯誤頁面",
-    "zh-CN": "更新 DSM 登录跳转与本地化网关错误页面",
-    "ja": "DSM サインインへのリダイレクトとローカライズされたゲートウェイエラーページを更新",
-    "ko": "DSM 로그인 리디렉션 및 현지화된 게이트웨이 오류 페이지 업데이트",
-    "de": "DSM-Anmeldeweiterleitungen und lokalisierte Gateway-Fehlerseiten aktualisieren",
-    "fr": "Mettre à jour les redirections de connexion DSM et les pages d’erreur localisées de la passerelle"
+    "en": "Fix DSM sign-in when opening over HTTP",
+    "zh-TW": "修正以 HTTP 開啟時的 DSM 登入",
+    "zh-CN": "修复通过 HTTP 打开时的 DSM 登录",
+    "ja": "HTTP で開いた場合の DSM ログインを修正",
+    "ko": "HTTP로 열 때 DSM 로그인 수정",
+    "de": "DSM-Anmeldung beim Öffnen über HTTP korrigiert",
+    "fr": "Corriger la connexion DSM lors de l’ouverture via HTTP"
   }
 }
