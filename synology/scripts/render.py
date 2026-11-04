@@ -43,7 +43,6 @@ def provider(secret):
         "EnableLiveTv": False,
         "EnableLiveTvManagement": False,
         "NewPath": True,
-        "SchemeOverride": "https",
         "DisableHttps": True,
         "DisablePushedAuthorization": True,
         "DoNotValidateEndpoints": False,

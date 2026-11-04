@@ -1,3 +1,12 @@
+## 12.4-0009
+
+DSM sign-in callbacks now follow the HTTP or HTTPS origin used to open Jellyfin
+HTTP remains available with an unencrypted-connection warning, without forced HTTPS redirection
+Upgrades refresh retained SSO provider settings to remove the previous HTTPS override
+The upstream version, official image, pinned SSO plugin and package UID runtime are unchanged
+An additional restart failed before the package start script; a retained-data reinstall restored service
+See validation for the unresolved lifecycle observation
+
 ## 12.4-0006
 
 Install wizard: port conflicts only warn; shared folder selection fixed

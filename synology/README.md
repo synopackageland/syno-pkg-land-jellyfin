@@ -2,8 +2,8 @@
 
 ## Current package
 
-Version **12.4-0005** pins SDK/App **0.46.1**, templates **0.38.0**,
-CLI **0.47.1** and executor **v0.39.0**. Validation and device acceptance
+Version **12.4-0009** pins SDK/App **0.50.7**, templates **0.40.1** and
+CLI **0.48.13**. Validation and device acceptance
 are recorded in [validation](docs/validation.md).
 Protected executors require
 administrator approval after upgrading. Device and mobile-client acceptance
@@ -45,7 +45,7 @@ unverified on a deployed package. DSM logout does not revoke upstream tokens.
 
 This wrapper uses the unmodified official Jellyfin 12.4 image, the unmodified
 SSO Authentication 4.0.0.4 plugin, and the embedded SDK OIDC provider.
-The rebuild target is `SynoPkgJellyfin` / `12.4-0005` / x86_64.
+The rebuild target is `SynoPkgJellyfin` / `12.4-0009` / x86_64.
 
 The native install wizard defaults to the dedicated `Jellyfin` Shared Folder
 for `/media`, mounted read-only. DSM creates the share and grants the package
@@ -63,8 +63,8 @@ commits. Do not describe its HEAD as the source tree of the pinned release image
 ## Build
 
 Use Node 24 and Go 1.26.10 on a Linux build host with access to the released SDK
-module. SDK/App are pinned to 0.43.1, templates to 0.38.0, CLI to 0.43.0 and
-executor to executor/v0.39.0. The upstream UI does not use our UI kit.
+module. SDK/App are pinned to 0.50.7, templates to 0.40.1 and CLI to 0.48.13.
+The upstream UI does not use our UI kit.
 Install the locked published dependencies and run:
 
 ```sh
@@ -74,7 +74,7 @@ python3 scripts/render.py
 npm test
 npx --no-install synopkgland check --json
 npx --no-install synopkgland build --arch x86_64 --json
-npx --no-install synopkgland inspect dist/SynoPkgJellyfin-12.4-0004-x86_64.spk --json
+npx --no-install synopkgland inspect dist/SynoPkgJellyfin-12.4-0009-x86_64.spk --json
 ```
 
 `render.py` verifies the original plugin ZIP's pinned SHA-256 before embedding
@@ -99,6 +99,12 @@ startup-status listener at each process launch. The SDK waits for
 admitting the backend; inspect
 reports `host-uid-listener-health`. OIDC issuer port 29490 stays loopback by default.
 The browser entry is `/synopkgland/SynoPkgJellyfin/` on the DSM origin.
+SSO callbacks follow the scheme and host of the current browser request. HTTP
+is allowed with the SDK's unencrypted-connection warning; it is not redirected
+to HTTPS. HTTPS remains recommended. Jellyfin trusts only the loopback gateway
+(`KnownProxies: 127.0.0.1`) for forwarded scheme/host headers. The provider has
+no scheme or port override. Upgrades refresh retained provider settings when
+the provider declaration changes, even when credentials and ports are unchanged.
 The install wizard selects only the loopback OIDC issuer port; upgrades retain
 that choice. The adapter receives it through the SDK runtime binding and
 refreshes native login configuration when the issuer or base path changes.

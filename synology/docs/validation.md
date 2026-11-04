@@ -359,3 +359,56 @@ Package Center WebAPI upgrade from 12.4-0004 passed without 4541;
 package readback confirmed the new version running.
 See `shared-folder-release.json` for exact SPK hashes and bounded evidence.
 Uninstall retains shared-folder data and the package-account ACL by DSM design.
+
+
+## 12.4-0009 request-scheme callback repair
+
+The wrapper removes the SSO plugin's HTTPS scheme override. The unchanged
+plugin builds callbacks from the request scheme and host after Jellyfin's
+forwarded-header middleware. The existing network declaration trusts only the
+loopback gateway. SDK 0.50.7 reconstructs forwarded scheme/host/port from the
+current request and replaces caller-supplied forwarding headers. No broader
+proxy trust or HTTPS redirect is added. HTTP retains the SDK's unencrypted
+connection warning.
+
+The retained-volume fingerprint now includes the rendered provider declaration.
+This forces the supported provider-update API to remove the old override on
+upgrade even when credentials, issuer port and base path are unchanged. The
+regression first reproduced both the forced scheme and skipped update, then
+passed after the fix. It also checks the posted provider, loopback proxy trust
+and unchanged-configuration bootstrap skip. The gateway contract checks HTTP,
+HTTPS and HTTP again with forged forwarding headers.
+
+Local checks passed with locked CLI 0.48.13 and SDK 0.50.7: six runtime tests,
+five hardware-adapter tests, three version tests, the Go entry contract, manifest
+check, x86_64 release build and SPK inspect (`findings=[]`). The upstream release
+remains 12.4; the package build increases from 0008 to 0009. The image and plugin
+pins are unchanged. Package scripts run as the package account; the container
+uses the package UID/GID with all capabilities dropped and no added capability.
+
+An in-place Package Center WebAPI upgrade from 12.4-0008 to 12.4-0009 completed
+with running readback. After a package stop/start, fresh browser contexts tested
+HTTP, HTTPS and HTTP in that order. Each captured the actual authorization
+redirect URI and callback, verified they stayed on the requested origin, reached
+the native home and read the signed-in native administrator through `Users/Me`
+with status 200. Both HTTP contexts displayed the unencrypted warning. The
+running Jellyfin process had a nonzero UID, read through an unprivileged login.
+Device access used the registered administrator and scoped Package Center APIs;
+no root shell, system-setting change or account change was used.
+
+Screenshots, sanitized callback evidence, artifact digest and gate outputs are
+provided in the delivery library. This bounded callback check does not repeat
+non-administrator/denial, media playback, hardware-transcode, uninstall, reboot
+or mobile-client acceptance. Approval retention remains unknown without a
+matching baseline SPK and executor inventory. Merge, annotated tag and release
+publication remain separate delivery steps.
+
+An additional stop/start performed while improving screenshot capture failed
+before the package's start script: prestart returned zero, then DSM reported
+`start_failed` / status 272 and the start WebAPI returned 4580. A read-only
+Container Manager query showed the package project stopped; no backend/issuer
+listener remained. The cause is unresolved within unprivileged diagnostics.
+A same-version Package Center reinstall with retained data restored `running`,
+and the callback sequence was repeated afterward. This is a separate lifecycle
+observation, not a certified repeated-restart pass or an identified callback
+regression. No system settings, other package or privileged repair was changed.
