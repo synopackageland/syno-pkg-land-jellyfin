@@ -1,5 +1,15 @@
 # Changelog
 
+## 12.4-0008
+
+- en: Fix DSM sign-in when opening over HTTP
+- zh-TW: 修正以 HTTP 開啟時的 DSM 登入
+- zh-CN: 修复通过 HTTP 打开时的 DSM 登录
+- ja: HTTP で開いた場合の DSM ログインを修正
+- ko: HTTP로 열 때 DSM 로그인 수정
+- de: DSM-Anmeldung beim Öffnen über HTTP korrigiert
+- fr: Corriger la connexion DSM lors de l’ouverture via HTTP
+
 ## 12.4-0006
 
 - en: Install wizard: port conflicts only warn; shared folder selection fixed
