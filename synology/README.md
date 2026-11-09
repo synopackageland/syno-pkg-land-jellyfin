@@ -1,9 +1,10 @@
 # Jellyfin for DSM
 
+
 ## Current package
 
-Version **12.4-0009** pins SDK/App **0.50.7**, templates **0.40.1** and
-CLI **0.48.13**. Validation and device acceptance
+Version **12.4-0010** pins SDK/App **0.53.23**, templates **0.41.5** and
+CLI **0.52.15**. Validation and device acceptance
 are recorded in [validation](docs/validation.md).
 Protected executors require
 administrator approval after upgrading. Device and mobile-client acceptance
@@ -45,13 +46,12 @@ unverified on a deployed package. DSM logout does not revoke upstream tokens.
 
 This wrapper uses the unmodified official Jellyfin 12.4 image, the unmodified
 SSO Authentication 4.0.0.4 plugin, and the embedded SDK OIDC provider.
-The rebuild target is `SynoPkgJellyfin` / `12.4-0009` / x86_64.
+The rebuild target is `SynoPkgJellyfin` / `12.4-0010` / x86_64.
 
-The native install wizard defaults to the dedicated `Jellyfin` Shared Folder
-for `/media`, mounted read-only. DSM creates the share and grants the package
-account read access. Selecting an existing supported share lets DSM grant the same read-only
-access without a prior package-account grant.
-Shared media remains after uninstall.
+The native install wizard selects an existing media folder at any depth inside
+a supported local ACL share, mounted read-only at `/media`. DSM grants read
+access to the whole share without a prior package-account grant. Shared media
+is retained on uninstall. See [folder selection](docs/folder-picker.md).
 Configuration and cache use private named volumes. Intel GPU support uses the
 SDK capability described below; DLNA is not enabled.
 
@@ -63,7 +63,7 @@ commits. Do not describe its HEAD as the source tree of the pinned release image
 ## Build
 
 Use Node 24 and Go 1.26.10 on a Linux build host with access to the released SDK
-module. SDK/App are pinned to 0.50.7, templates to 0.40.1 and CLI to 0.48.13.
+module. SDK/App are pinned to 0.53.23, templates to 0.41.5 and CLI to 0.52.15.
 The upstream UI does not use our UI kit.
 Install the locked published dependencies and run:
 
@@ -74,7 +74,7 @@ python3 scripts/render.py
 npm test
 npx --no-install synopkgland check --json
 npx --no-install synopkgland build --arch x86_64 --json
-npx --no-install synopkgland inspect dist/SynoPkgJellyfin-12.4-0009-x86_64.spk --json
+npx --no-install synopkgland inspect dist/SynoPkgJellyfin-12.4-0010-x86_64.spk --json
 ```
 
 `render.py` verifies the original plugin ZIP's pinned SHA-256 before embedding
