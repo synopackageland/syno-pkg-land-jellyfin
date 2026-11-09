@@ -1,14 +1,16 @@
 {
   "tag": "v12.4",
   "commit": "83d0d0e7f76e23e2e085c8ff67d28b772d35967d",
-  "build": 9,
+  "build": 10,
   "changelog": {
-    "en": "Keep DSM sign-in callbacks on the requested HTTP or HTTPS scheme",
-    "zh-TW": "DSM 登入回呼跟隨實際開啟的 HTTP 或 HTTPS",
-    "zh-CN": "DSM 登录回调跟随实际打开的 HTTP 或 HTTPS",
-    "ja": "DSM ログインのコールバックを要求された HTTP または HTTPS に合わせる",
-    "ko": "DSM 로그인 콜백에 요청된 HTTP 또는 HTTPS 사용",
-    "de": "DSM-Anmelderückruf verwendet das angeforderte HTTP oder HTTPS",
-    "fr": "Le retour de connexion DSM suit le protocole HTTP ou HTTPS demandé"
+    "en": "Select a media folder at any depth within a shared folder",
+    "zh-TW": "可選取共享資料夾內任意層級的媒體資料夾",
+    "zh-CN": "可选择共享文件夹内任意层级的媒体文件夹",
+    "ja": "共有フォルダー内の任意の階層にあるメディアフォルダーを選択",
+    "ko": "공유 폴더 내 모든 깊이의 미디어 폴더 선택 지원",
+    "de": "Medienordner auf jeder Ebene eines freigegebenen Ordners auswählen",
+    "fr": "Choisir un dossier multimédia à toute profondeur dans un dossier partagé",
+    "es": "Seleccionar una carpeta multimedia a cualquier nivel dentro de una carpeta compartida",
+    "it": "Seleziona una cartella multimediale a qualsiasi livello in una cartella condivisa"
   }
 }

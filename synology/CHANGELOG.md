@@ -1,5 +1,10 @@
 # Changelog
 
+## 12.4-0010
+
+Select media subfolders with SDK 0.53.22 and CLI 0.52.14; preserve read-only mounts
+
+
 ## 12.4-0008
 
 - en: Fix DSM sign-in when opening over HTTP
