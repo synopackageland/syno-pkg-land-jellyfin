@@ -1,5 +1,18 @@
 # Changelog
 
+## 12.4-0011
+
+- en: Keep temporary files on disk instead of memory
+- zh-TW: 暫存檔改存於磁碟而非記憶體
+- zh-CN: 临时文件改存于磁盘而非内存
+- ja: 一時ファイルをメモリーではなくディスクに保存
+- ko: 임시 파일을 메모리 대신 디스크에 저장
+- de: Temporäre Dateien auf dem Datenträger statt im Arbeitsspeicher ablegen
+- fr: Conserver les fichiers temporaires sur le disque plutôt qu’en mémoire
+
+Rebuilt with SDK/App 0.53.25, CLI 0.52.16 and executor v0.53.6. `/tmp` is SDK
+disk scratch instead of a memory tmpfs.
+
 ## 12.4-0010
 
 Select media subfolders with SDK 0.53.23 and CLI 0.52.15; retain existing share selections on upgrade

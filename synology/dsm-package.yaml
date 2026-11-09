@@ -2,7 +2,7 @@
   "schema": 2,
   "package": "SynoPkgJellyfin",
   "version": "12.4",
-  "build": 10,
+  "build": 11,
   "displayname": "Jellyfin",
   "icon": "assets/icon.png",
   "description": "Organize and stream your movies, TV shows and music",
@@ -16,15 +16,15 @@
   "maintainer": "Jellyfin",
   "metadata": {
     "changelog": {
-      "en": "Select a media folder at any depth within a shared folder",
-      "zh-TW": "可選取共享資料夾內任意層級的媒體資料夾",
-      "zh-CN": "可选择共享文件夹内任意层级的媒体文件夹",
-      "ja": "共有フォルダー内の任意の階層にあるメディアフォルダーを選択",
-      "ko": "공유 폴더 내 모든 깊이의 미디어 폴더 선택 지원",
-      "de": "Medienordner auf jeder Ebene eines freigegebenen Ordners auswählen",
-      "fr": "Choisir un dossier multimédia à toute profondeur dans un dossier partagé",
-      "es": "Seleccionar una carpeta multimedia a cualquier nivel dentro de una carpeta compartida",
-      "it": "Seleziona una cartella multimediale a qualsiasi livello in una cartella condivisa"
+      "en": "Keep temporary files on disk instead of memory",
+      "zh-TW": "暫存檔改存於磁碟而非記憶體",
+      "zh-CN": "临时文件改存于磁盘而非内存",
+      "ja": "一時ファイルをメモリーではなくディスクに保存",
+      "ko": "임시 파일을 메모리 대신 디스크에 저장",
+      "de": "Temporäre Dateien auf dem Datenträger statt im Arbeitsspeicher ablegen",
+      "fr": "Conserver les fichiers temporaires sur le disque plutôt qu’en mémoire",
+      "es": "Guardar los archivos temporales en el disco en lugar de en la memoria",
+      "it": "Conservare i file temporanei su disco anziché in memoria"
     },
     "maintainer_url": "https://github.com/jellyfin/jellyfin",
     "distributor": "Syno Package Land",
@@ -48,7 +48,7 @@
     }
   },
   "compose": {
-    "sdk": "0.53.23",
+    "sdk": "0.53.25",
     "files": [
       "compose.yaml"
     ],
@@ -79,6 +79,9 @@
           "env": "JELLYFIN_BIND",
           "format": "host"
         },
+        "scratch": [
+          "/tmp"
+        ],
         "storage_init": {
           "directories": [
             {
@@ -137,7 +140,7 @@
     }
   },
   "identity_gateway": {
-    "sdk": "0.53.23",
+    "sdk": "0.53.25",
     "mode": "oidc",
     "access": "dsm-users",
     "upstream_auth_paths": [
