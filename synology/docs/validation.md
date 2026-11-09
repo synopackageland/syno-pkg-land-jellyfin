@@ -1,54 +1,51 @@
-## 12.4-0010 folder-picker candidate — blocked
-
-**waiting for CLI 0.52.15**. The announced CLI 0.52.15 / SDK 0.53.23 fixes are
-required before rerunning upgrade retention and the baseline gate. This draft
-pins the tested published SDK/App 0.53.22, CLI 0.52.14 (range ~0.52.14),
-templates 0.41.5 and executor/v0.53.5.
-
-Only `synology/` changes. Check, the sole declared x86_64 release build and
-standalone inspect pass with no findings. The previous official SPK is retained
-with its SHA-256 and passes inspect with its original CLI 0.48.13.
-Affected existing validation passes: 6 runtime tests, 3 version tests and 1 Go entry contract.
-The folder wizard/render tests are **4 passed / 1 failed**, with no skips.
-The failure intentionally exposes the released CLI's legacy-share prefill bug.
-
-A fresh native Package Center installation on DSM 7.3.2 selected an owned folder
-two levels below its share, including a space in the folder name. Independent
-readback confirmed running status, the exact saved share/subpath, and the actual
-read-only container source. The nonzero package UID read the synthetic fixture
-and a write was refused. English native chooser and selected-control screenshots
-are private artifacts. App sign-in, playback, old DSM device fallback and broader
-regression/lifecycle suites were outside this focused validation.
-
-The previous official version was then installed with an owned share root.
-The real upgrade wizard displayed an empty folder instead of the saved share.
-After canceling that wizard, one upgrade with omitted selection answers failed
-in preinst with `COMPOSE_SHARE_INVALID: folder selection missing` (DSM 4501).
-The saved selection's hash was unchanged, but DSM had already removed the old
-payload and the new version was not installed. This is a failed upgrade, not
-acceptance of upgrade retention. The SDK native-share preparer requires a saved
-subpath entry that legacy `shared_folders` records do not contain.
-
-`build --baseline` and `inspect --baseline` both reject the unmodified previous
-official SPK with `APPROVAL_BASELINE_INVALID` and an older wizard format mismatch.
-These gates failed; automated approval comparison is unavailable. Direct archive
-comparison confirms identical `conf/privilege` (`run-as: package`), service UID
-policy, capabilities, host elevation, networking and media access. The manifest
-adds no capabilities. Container Manager itself adds NET_BIND_SERVICE to its
-bounding configuration; the App remains nonroot, with zero effective/permitted
-capabilities where measured. No App ACL writer, root hook or SDK workaround is added.
-
-Scoped integration/expanded-SPK private-denylist scans pass. Fresh test packages
-were uninstalled through DSM. Failed upgrades left stopped
-containers and retained data; the operator removed only the verified owned
-project/container records through the official API, then the exact owned
-networks, named volumes, package residues and synthetic shares. Final independent
-readback confirms their absence. Package identities and images were retained.
-No merge, release, catalog edit or
-GitHub Actions enablement was performed. Historical evidence follows with its
-original version boundaries.
-
 # Validation scope
+
+## 12.4-0010 — SDK 0.53.23 folder selection
+
+Published SDK/App 0.53.23 and CLI 0.52.15 (range ~0.52.15, locked 0.52.15)
+replace the earlier candidate dependencies. Templates remain 0.41.5 and executor
+v0.53.5. Only `synology/` changes; the official upstream image is unchanged.
+
+Check, the sole declared x86_64 release build with the previous official SPK as
+`--baseline`, and inspect with the same baseline pass with no findings. Historical
+wizard artifacts are accepted. The baseline approval-retention field remains
+`unknown` because it requires an executor inventory; no executor approval
+retention is claimed. Direct archive comparison confirms identical
+`conf/privilege` (`run-as: package`), service UID policy, capabilities, host
+elevation, networks and media mount permissions. No root or ACL writer is added.
+
+All five folder/wizard regression tests pass, including legacy share-only
+prefill, saved two-level paths, omitted-answer postinst, nonblocking post-grant
+checks, and executed DSM version fixtures for 7.1, 7.2.1, 7.2.2, 7.3.2 and
+unknown versions. The Go entry contracts using SDK 0.53.23 pass where present.
+
+Two independent real upgrades on DSM 7.3.2 start from the previous official SPK
+with a legacy record containing only `shared_folders`. The silent upgrade omits
+all folder answers and preserves the original record bytes. The separate native
+Package Center wizard prefills the original share root, requires no new folder
+choice, and submits the displayed retained selection. Its normalized record
+adds an explicitly empty subpath without changing the selected folder. Both
+upgrades complete at the target version with running status. Independent
+readback verifies the original host source, package UID, zero effective/permitted
+capabilities, unchanged synthetic file content and refused writes to the
+read-only media mount. Container Manager's own NET_BIND_SERVICE bounding setting
+remains present; it is not an added manifest capability.
+
+The folder wizard heading and introduction follow the English Package Center
+UI even though the account's saved language differs. Full wizard and native
+chooser screenshots were retaken in English. Browsing the tree and canceling
+the chooser leaves the retained root unchanged before the actual upgrade.
+
+This focused rerun covers the previously failed baseline and legacy-upgrade
+paths. The earlier two-level fresh-install checks belong to the SDK 0.53.22
+candidate and remain archived with that version. Fresh installation, playback,
+App sign-in, old-DSM device acceptance and broader suites were not repeated.
+
+Scoped source/expanded-SPK privacy scans and owned fixture cleanup are recorded
+with the private artifacts. Package identities are retained; the operator ran
+no image deletion or prune commands. No merge, release, catalog change or
+Actions enablement is part of this migration.
+Earlier evidence below keeps its original version and acceptance boundaries.
 
 ## 12.4-0004 DSM path ingress migration
 

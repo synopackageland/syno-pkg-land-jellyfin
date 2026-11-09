@@ -1,45 +1,46 @@
 {
   "version": "12.4-0010",
   "toolchain": {
-    "cli": "0.52.14",
+    "cli": "0.52.15",
     "templates": "0.41.5",
-    "sdk": "0.53.22",
-    "app": "0.53.22",
+    "sdk": "0.53.23",
+    "app": "0.53.23",
     "ui": "0.19.2",
     "executorTag": "executor/v0.53.5",
     "goToolchain": "go1.26.10"
   },
   "checks": {
     "check": true,
+    "build_baseline": true,
+    "inspect_baseline": true,
     "build": true,
-    "inspect": true,
-    "build_baseline": false,
-    "inspect_baseline": false
-  },
-  "artifacts": {
-    "SynoPkgJellyfin-12.4-0010-x86_64.spk": "ff64cb5f390e266d4637148bbcd6225c6946eca9ef64aeb19b21d49f36d97e92"
+    "inspect": true
   },
   "inspect_findings": [],
+  "approval_retention": "unknown",
+  "privileges_unchanged": true,
+  "container_policy_unchanged": true,
+  "artifacts": {
+    "SynoPkgJellyfin-12.4-0010-x86_64.spk": "ce989020e1e16778416220f86b144bde9b58c981c31e26bbe54ff2f3dd777266"
+  },
   "folder_tests": {
-    "passed": 4,
-    "failed": 1,
+    "passed": 5,
+    "failed": 0,
     "skipped": 0
   },
   "device": {
     "dsm": "7.3.2",
-    "fresh_two_level_folder": true,
+    "legacy_silent_upgrade": true,
+    "legacy_wizard_upgrade": true,
+    "original_share_root_kept": true,
+    "package_uid_kept": true,
+    "fixture_content_kept": true,
     "nonroot_read": true,
     "readonly_write_denied": true,
-    "legacy_upgrade_prefill": false,
-    "legacy_omitted_answer_upgrade": false,
-    "saved_selection_hash_unchanged_after_failed_upgrade": true,
+    "effective_and_permitted_capabilities_zero": true,
+    "english_wizard_intro_and_heading": true,
     "cleanup_complete": true
   },
-  "publishable": false,
-  "waiting_for": "CLI 0.52.15 / SDK 0.53.23",
-  "blockers": [
-    "legacy upgrade wizard clears saved share",
-    "legacy root selection is rejected in preinst",
-    "baseline rejects previous official wizard"
-  ]
+  "review_ready": true,
+  "validation_scope": "Published dependency rebuild, historical baseline inspection, five folder/render regressions and two previous-official upgrades per App; broader suites and two-level fresh installation were not repeated"
 }

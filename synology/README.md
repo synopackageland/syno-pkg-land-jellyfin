@@ -1,13 +1,10 @@
 # Jellyfin for DSM
 
-This folder-picker candidate is blocked by legacy upgrade wizard prefill and
-CLI baseline compatibility; see [validation](docs/validation.md). Do not release it.
-
 
 ## Current package
 
-Version **12.4-0010** pins SDK/App **0.53.22**, templates **0.41.5** and
-CLI **0.52.14**. Validation and device acceptance
+Version **12.4-0010** pins SDK/App **0.53.23**, templates **0.41.5** and
+CLI **0.52.15**. Validation and device acceptance
 are recorded in [validation](docs/validation.md).
 Protected executors require
 administrator approval after upgrading. Device and mobile-client acceptance
@@ -66,7 +63,7 @@ commits. Do not describe its HEAD as the source tree of the pinned release image
 ## Build
 
 Use Node 24 and Go 1.26.10 on a Linux build host with access to the released SDK
-module. SDK/App are pinned to 0.53.22, templates to 0.41.5 and CLI to 0.52.14.
+module. SDK/App are pinned to 0.53.23, templates to 0.41.5 and CLI to 0.52.15.
 The upstream UI does not use our UI kit.
 Install the locked published dependencies and run:
 
