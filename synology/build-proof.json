@@ -1,15 +1,17 @@
 {
-  "version": "12.4-0010",
+  "version": "12.4-0011",
   "toolchain": {
-    "cli": "0.52.15",
+    "cli": "0.52.16",
     "templates": "0.41.5",
-    "sdk": "0.53.23",
-    "app": "0.53.23",
+    "sdk": "0.53.25",
+    "app": "0.53.25",
     "ui": "0.19.2",
-    "executorTag": "executor/v0.53.5",
+    "executorTag": "executor/v0.53.6",
     "goToolchain": "go1.26.10"
   },
   "checks": {
+    "tests": true,
+    "render_fresh": true,
     "check": true,
     "build_baseline": true,
     "inspect_baseline": true,
@@ -19,28 +21,28 @@
   "inspect_findings": [],
   "approval_retention": "unknown",
   "privileges_unchanged": true,
-  "container_policy_unchanged": true,
   "artifacts": {
-    "SynoPkgJellyfin-12.4-0010-x86_64.spk": "ce989020e1e16778416220f86b144bde9b58c981c31e26bbe54ff2f3dd777266"
+    "SynoPkgJellyfin-12.4-0011-x86_64.spk": "ccb1e6eaa0802a50ed5905ffa1b39c616309860f95acd19d4ddb6ffcc44974c7"
   },
-  "folder_tests": {
-    "passed": 5,
-    "failed": 0,
-    "skipped": 0
+  "temporary_files": {
+    "scratch": [
+      "/tmp"
+    ],
+    "tmpfs": [],
+    "TMPDIR": "/tmp"
   },
   "device": {
-    "dsm": "7.3.2",
-    "legacy_silent_upgrade": true,
-    "legacy_wizard_upgrade": true,
-    "original_share_root_kept": true,
-    "package_uid_kept": true,
-    "fixture_content_kept": true,
-    "nonroot_read": true,
-    "readonly_write_denied": true,
-    "effective_and_permitted_capabilities_zero": true,
-    "english_wizard_intro_and_heading": true,
+    "dsm": "7.4.1",
+    "upgrade_from": "12.4-0010",
+    "running": true,
+    "healthy": true,
+    "tmp_on_disk": true,
+    "tmp_mode": "0700",
+    "tmp_owner_package_uid": true,
+    "tmp_writable": true,
+    "web_client_loaded": true,
     "cleanup_complete": true
   },
   "review_ready": true,
-  "validation_scope": "Published dependency rebuild, historical baseline inspection, five folder/render regressions and two previous-official upgrades per App; broader suites and two-level fresh installation were not repeated"
+  "validation_scope": "SDK 0.53.25 disk-scratch rebuild: unit/entry/folder tests, render, check, baseline build/inspect and one previous-official upgrade on one DSM 7.4.1 device; broader suites were not repeated"
 }

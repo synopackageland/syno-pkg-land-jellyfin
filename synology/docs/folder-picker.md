@@ -19,7 +19,8 @@ Only the released CLI/SDK owns selection, validation and permission recovery.
 
 SDK-generated runtime secret binds and storage-init assets remain read-only at
 `/synopkgland/secrets/` and `/synopkgland/storage-init`; they are not user-selectable
-data folders. The existing temporary `/tmp` mount is unchanged.
+data folders. Temporary files use the SDK disk scratch at `/tmp`, not a
+user-selectable folder.
 
 Published SDK 0.53.23 and CLI 0.52.15 preserve legacy share-only records as the
 share root in silent and wizard upgrades. See [validation](validation.md).

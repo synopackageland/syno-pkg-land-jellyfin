@@ -3,8 +3,8 @@
 
 ## Current package
 
-Version **12.4-0010** pins SDK/App **0.53.23**, templates **0.41.5** and
-CLI **0.52.15**. Validation and device acceptance
+Version **12.4-0011** pins SDK/App **0.53.25**, templates **0.41.5**,
+CLI **0.52.16** and executor **v0.53.6**. Validation and device acceptance
 are recorded in [validation](docs/validation.md).
 Protected executors require
 administrator approval after upgrading. Device and mobile-client acceptance
@@ -46,7 +46,7 @@ unverified on a deployed package. DSM logout does not revoke upstream tokens.
 
 This wrapper uses the unmodified official Jellyfin 12.4 image, the unmodified
 SSO Authentication 4.0.0.4 plugin, and the embedded SDK OIDC provider.
-The rebuild target is `SynoPkgJellyfin` / `12.4-0010` / x86_64.
+The rebuild target is `SynoPkgJellyfin` / `12.4-0011` / x86_64.
 
 The native install wizard selects an existing media folder at any depth inside
 a supported local ACL share, mounted read-only at `/media`. DSM grants read
@@ -63,7 +63,7 @@ commits. Do not describe its HEAD as the source tree of the pinned release image
 ## Build
 
 Use Node 24 and Go 1.26.10 on a Linux build host with access to the released SDK
-module. SDK/App are pinned to 0.53.23, templates to 0.41.5 and CLI to 0.52.15.
+module. SDK/App are pinned to 0.53.25, templates to 0.41.5 and CLI to 0.52.16.
 The upstream UI does not use our UI kit.
 Install the locked published dependencies and run:
 
@@ -74,7 +74,7 @@ python3 scripts/render.py
 npm test
 npx --no-install synopkgland check --json
 npx --no-install synopkgland build --arch x86_64 --json
-npx --no-install synopkgland inspect dist/SynoPkgJellyfin-12.4-0010-x86_64.spk --json
+npx --no-install synopkgland inspect dist/SynoPkgJellyfin-12.4-0011-x86_64.spk --json
 ```
 
 `render.py` verifies the original plugin ZIP's pinned SHA-256 before embedding
@@ -84,7 +84,9 @@ at NAS startup. The generated JSON documents are valid YAML; edit the renderer
 and container adapter, then render again.
 
 Runtime uses the package UID, all capabilities dropped, no-new-privileges,
-read-only image files, a private directory under a sticky named volume, a 2 GiB
+read-only image files, a private directory under a sticky named volume, SDK disk
+scratch at `/tmp` (`TMPDIR=/tmp`; package UID, mode 0700, emptied at every start;
+no memory tmpfs), a 2 GiB
 memory ceiling and a low CPU weight (`cpu_shares: 256`) on any core. The SDK creates and injects private OIDC and
 bootstrap secrets. The initial local bootstrap account has an SDK-generated
 random password retained in the private configuration volume. On regenerated

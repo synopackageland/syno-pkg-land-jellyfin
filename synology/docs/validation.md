@@ -1,5 +1,32 @@
 # Validation scope
 
+## 12.4-0011 — SDK 0.53.25 disk scratch
+
+Published SDK/App 0.53.25 and CLI 0.52.16 (range ~0.52.16, locked 0.52.16)
+replace 0.53.23/0.52.15; executor is v0.53.6 and templates remain 0.41.5.
+`scripts/render.py` no longer emits a `/tmp` tmpfs; it declares
+`compose.services.jellyfin.scratch: [/tmp]` and sets `TMPDIR=/tmp`. The service
+already uses an explicit entrypoint and command. No memory tmpfs remains:
+Jellyfin needs no in-memory sockets or lock files, and its transcode and
+image caches stay in the private cache directory. Only `synology/` changes; the
+official image digest is unchanged.
+
+Runtime, hardware-acceleration, version and folder tests, the Go entry
+contract, check, the x86_64 build with the previous official SPK as
+`--baseline`, and inspect with the same baseline pass with no findings.
+Approval retention remains `unknown` (no executor inventory). The generated
+Compose has no tmpfs and binds the package scratch directory at `/tmp`.
+
+One device pass on DSM 7.4.1 upgraded the previous official 12.4-0010
+(installed for the test, `/tmp` was tmpfs mode 1777) to 12.4-0011. The package
+runs and the container becomes healthy; `/tmp` is a bind of the package scratch
+directory on the btrfs data volume (not tmpfs), mode 0700, owned by the package
+UID/GID, writable, with `TMPDIR=/tmp`. A signed-in DSM user reaches the Jellyfin
+web client through the DSM gateway. The test installation and its fixture folder
+were removed afterwards. Playback, transcoding, hardware acceleration and other
+DSM versions were not repeated.
+
+
 ## 12.4-0010 — SDK 0.53.23 folder selection
 
 Published SDK/App 0.53.23 and CLI 0.52.15 (range ~0.52.15, locked 0.52.15)

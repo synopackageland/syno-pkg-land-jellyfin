@@ -77,7 +77,7 @@ def manifest():
             "sharedFolder": {"mode": "select", "key": "media", "permission": "ro", "picker": "folder"}
         },
         "compose": {
-            "sdk": "0.53.23",
+            "sdk": "0.53.25",
             "files": ["compose.yaml"],
             "devices": {"gpu": {"services": ["jellyfin"]}},
             "shares": {
@@ -92,6 +92,8 @@ def manifest():
                 "jellyfin": {
                     "network": "host",
                     "listener": {"env": "JELLYFIN_BIND", "format": "host"},
+                    # Disk temporary files; no memory tmpfs is needed.
+                    "scratch": ["/tmp"],
                     "storage_init": {
                         "directories": [{"base": "/var/tmp", "path": "jellyfin"}],
                         "runtime": {
@@ -149,7 +151,7 @@ def manifest():
             "network": {"egress": "internet"},
         },
         "identity_gateway": {
-            "sdk": "0.53.23",
+            "sdk": "0.53.25",
             "mode": "oidc",
             "access": "dsm-users",
             "upstream_auth_paths": ['/System', '/Users', '/QuickConnect', '/Items', '/UserItems', '/UserViews', '/Sessions', '/Videos', '/Audio', '/socket', '/Auth', '/Playback'],
@@ -201,9 +203,9 @@ def render():
                     "JELLYFIN_CONFIG_DIR": STATE + "/config/config",
                     "JELLYFIN_CACHE_DIR": STATE + "/cache",
                     "JELLYFIN_LOG_DIR": STATE + "/config/log",
+                    "TMPDIR": "/tmp",
                 },
                 "read_only": True,
-                "tmpfs": ["/tmp"],
                 "volumes": ["data:/var/tmp"],
                 # Use any core but yield to DSM and other services under contention.
                 "cpu_shares": 256,

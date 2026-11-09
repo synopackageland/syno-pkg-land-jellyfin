@@ -43,12 +43,10 @@
         "JELLYFIN_DATA_DIR": "/var/tmp/jellyfin/config",
         "JELLYFIN_CONFIG_DIR": "/var/tmp/jellyfin/config/config",
         "JELLYFIN_CACHE_DIR": "/var/tmp/jellyfin/cache",
-        "JELLYFIN_LOG_DIR": "/var/tmp/jellyfin/config/log"
+        "JELLYFIN_LOG_DIR": "/var/tmp/jellyfin/config/log",
+        "TMPDIR": "/tmp"
       },
       "read_only": true,
-      "tmpfs": [
-        "/tmp"
-      ],
       "volumes": [
         "data:/var/tmp"
       ],
