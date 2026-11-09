@@ -111,12 +111,14 @@ fi
         self.assertEqual(service["network"], "host")
         self.assertEqual(
             manifest["install"]["sharedFolder"],
-            {"mode": "dedicated", "key": "media", "name": "Jellyfin", "permission": "ro"},
+            {"mode": "select", "key": "media", "permission": "ro", "picker": "folder"},
         )
         self.assertEqual(
             manifest["compose"]["shares"]["media"],
             {
                 "select": "install",
+                "picker": "folder",
+                "permission": "ro",
                 "mounts": [{"service": "jellyfin", "target": "/media"}],
             },
         )

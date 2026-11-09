@@ -74,15 +74,17 @@ def manifest():
         "capabilities": {"composeMounts": True},
         "install": {
             "ports": True,
-            "sharedFolder": {"mode": "dedicated", "key": "media", "name": "Jellyfin", "permission": "ro"}
+            "sharedFolder": {"mode": "select", "key": "media", "permission": "ro", "picker": "folder"}
         },
         "compose": {
-            "sdk": "0.50.7",
+            "sdk": "0.53.23",
             "files": ["compose.yaml"],
             "devices": {"gpu": {"services": ["jellyfin"]}},
             "shares": {
                 "media": {
                     "select": "install",
+                    "picker": "folder",
+                    "permission": "ro",
                     "mounts": [{"service": "jellyfin", "target": "/media"}],
                 }
             },
@@ -147,7 +149,7 @@ def manifest():
             "network": {"egress": "internet"},
         },
         "identity_gateway": {
-            "sdk": "0.50.7",
+            "sdk": "0.53.23",
             "mode": "oidc",
             "access": "dsm-users",
             "upstream_auth_paths": ['/System', '/Users', '/QuickConnect', '/Items', '/UserItems', '/UserViews', '/Sessions', '/Videos', '/Audio', '/socket', '/Auth', '/Playback'],

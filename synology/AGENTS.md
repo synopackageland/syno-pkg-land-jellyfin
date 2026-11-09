@@ -9,7 +9,7 @@ admin group through the plugin's supported policy; do not replace OIDC with a
 shared administrator account. Runtime must remain the package UID without root
 or added capabilities.
 
-The native wizard defaults to the dedicated Jellyfin share, mounted read-only.
+The native wizard selects an existing media folder, mounted read-only.
 DSM manages its package-account grant. Optional existing shares are validated for supported local folder types; DSM
 data-share grants the declared package-account access without a pre-existing grant.
 
