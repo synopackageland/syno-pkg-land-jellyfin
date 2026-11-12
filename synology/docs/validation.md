@@ -1,5 +1,25 @@
 # Validation scope
 
+## 12.4-0012 — CLI 0.53.16 rebuild
+
+Published CLI 0.53.16 (range ~0.53.16, locked 0.53.16) replaces 0.52.16; it
+resolves its own templates 0.42.1. SDK/App 0.53.25, the direct templates pin
+0.41.5, executor v0.53.6 and the official image digest are unchanged. Only
+`synology/` changes.
+
+Check, the x86_64 build with the previous official SPK as `--baseline`, and
+inspect with the same baseline pass with no findings; DSM errors are empty and
+the existing `video-driver` resource warning is unchanged from 12.4-0011.
+Approval retention remains `unknown` (no executor inventory); root programs and
+policy changes are empty. Compared with 12.4-0011, INFO only drops
+`instuninst_restart_services`; nginx stays in `startstop_restart_services`, so
+installation no longer reloads nginx while Package Center queries package
+information. Scripts, resources, Compose files and payload are otherwise identical
+apart from the build-numbered UI host file name. Packaging and SPK privacy scans
+pass.
+
+This is a packaging-only rebuild: unit tests and device installation were not run.
+
 ## 12.4-0011 — SDK 0.53.25 disk scratch
 
 Published SDK/App 0.53.25 and CLI 0.52.16 (range ~0.52.16, locked 0.52.16)
