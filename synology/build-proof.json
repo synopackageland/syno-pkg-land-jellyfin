@@ -1,7 +1,8 @@
 {
-  "version": "12.4-0011",
+  "version": "12.4-0012",
+  "previous_version": "12.4-0011",
   "toolchain": {
-    "cli": "0.52.16",
+    "cli": "0.53.16",
     "templates": "0.41.5",
     "sdk": "0.53.25",
     "app": "0.53.25",
@@ -10,19 +11,26 @@
     "goToolchain": "go1.26.10"
   },
   "checks": {
-    "tests": true,
+    "tests": false,
     "render_fresh": true,
     "check": true,
     "build_baseline": true,
     "inspect_baseline": true,
     "build": true,
-    "inspect": true
+    "inspect": true,
+    "privacy_scan": true
   },
   "inspect_findings": [],
   "approval_retention": "unknown",
   "privileges_unchanged": true,
   "artifacts": {
-    "SynoPkgJellyfin-12.4-0011-x86_64.spk": "ccb1e6eaa0802a50ed5905ffa1b39c616309860f95acd19d4ddb6ffcc44974c7"
+    "SynoPkgJellyfin-12.4-0012-x86_64.spk": "e764b1d33eca6a14eb13a34097ca0c758e0c963cd9e8265d3cb0755ee6eb07e5"
+  },
+  "info_change": {
+    "removed": [
+      "instuninst_restart_services"
+    ],
+    "startstop_restart_services": "nginx.service"
   },
   "temporary_files": {
     "scratch": [
@@ -31,18 +39,7 @@
     "tmpfs": [],
     "TMPDIR": "/tmp"
   },
-  "device": {
-    "dsm": "7.4.1",
-    "upgrade_from": "12.4-0010",
-    "running": true,
-    "healthy": true,
-    "tmp_on_disk": true,
-    "tmp_mode": "0700",
-    "tmp_owner_package_uid": true,
-    "tmp_writable": true,
-    "web_client_loaded": true,
-    "cleanup_complete": true
-  },
+  "device": null,
   "review_ready": true,
-  "validation_scope": "SDK 0.53.25 disk-scratch rebuild: unit/entry/folder tests, render, check, baseline build/inspect and one previous-official upgrade on one DSM 7.4.1 device; broader suites were not repeated"
+  "validation_scope": "CLI 0.53.16 packaging-only rebuild: render, check, baseline build/inspect and privacy scans; unit tests and device installation were not run"
 }

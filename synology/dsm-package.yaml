@@ -2,7 +2,7 @@
   "schema": 2,
   "package": "SynoPkgJellyfin",
   "version": "12.4",
-  "build": 11,
+  "build": 12,
   "displayname": "Jellyfin",
   "icon": "assets/icon.png",
   "description": "Organize and stream your movies, TV shows and music",
@@ -16,15 +16,15 @@
   "maintainer": "Jellyfin",
   "metadata": {
     "changelog": {
-      "en": "Keep temporary files on disk instead of memory",
-      "zh-TW": "暫存檔改存於磁碟而非記憶體",
-      "zh-CN": "临时文件改存于磁盘而非内存",
-      "ja": "一時ファイルをメモリーではなくディスクに保存",
-      "ko": "임시 파일을 메모리 대신 디스크에 저장",
-      "de": "Temporäre Dateien auf dem Datenträger statt im Arbeitsspeicher ablegen",
-      "fr": "Conserver les fichiers temporaires sur le disque plutôt qu’en mémoire",
-      "es": "Guardar los archivos temporales en el disco en lugar de en la memoria",
-      "it": "Conservare i file temporanei su disco anziché in memoria"
+      "en": "Improve installation reliability in Package Center",
+      "zh-TW": "提升在套件中心安裝的穩定性",
+      "zh-CN": "提升在套件中心安装的稳定性",
+      "ja": "パッケージセンターでのインストールの安定性を向上",
+      "ko": "패키지 센터에서의 설치 안정성 향상",
+      "de": "Zuverlässigkeit der Installation im Paket-Zentrum verbessern",
+      "fr": "Améliorer la fiabilité de l’installation dans le Centre de paquets",
+      "es": "Mejorar la fiabilidad de la instalación en el Centro de paquetes",
+      "it": "Migliorare l’affidabilità dell’installazione nel Centro pacchetti"
     },
     "maintainer_url": "https://github.com/jellyfin/jellyfin",
     "distributor": "Syno Package Land",
